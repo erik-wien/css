@@ -111,4 +111,4 @@ body {
 
 **Footer** — use `.app-footer` with a per-app grid override: `display: grid; grid-template-columns: 1fr auto 1fr`. Columns: Impressum link | copyright | version string.
 
-See `~/.claude/rules/ui-design-rules.md` §12–§14 for full markup requirements.
+See [`docs/design-rules.md`](docs/design-rules.md) §12–§14 for full markup requirements.
