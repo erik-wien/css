@@ -1,10 +1,32 @@
 /* layout.css — shared layout, grid, and utilities.
    NOTE: .app-header and .app-footer use position: fixed. Consumer projects MUST
    reserve room for them on <body>:
-     body { padding-top: <header-height>; padding-bottom: <footer-height>; }
-   Measure the actual rendered heights (header ≈ 56px, footer ≈ 32px with the
-   current padding/font sizes) and override in project app.css if you change them.
+     body { padding-top: var(--app-header-height); padding-bottom: var(--app-footer-height); }
+   The two custom properties are declared on :root below. Override them in
+   project-theme.css if the app's chrome is taller/shorter than the defaults.
+
+   Full-viewport app shells (chat, kiosk, live dashboards) opt out of the
+   body-padding reservation via <body class="app-shell"> — see rule §12a.
 */
+
+:root {
+  --app-header-height: 60px;
+  --app-footer-height: 48px;
+}
+
+/* Full-viewport app-shell opt-in (rule §12a).
+   The shell element owns the space between fixed header and fixed footer via
+   inset — no 100vh math, no padding coupling, no mobile URL-bar hack. */
+body.app-shell {
+  padding: 0;
+  overflow: hidden;
+}
+body.app-shell .app-shell-root {
+  position: fixed;
+  inset: var(--app-header-height) 0 var(--app-footer-height) 0;
+  display: flex;
+  flex-direction: column;
+}
 
 /* ── Containers ─────────────────────────────────────────────────────────────── */
 
@@ -24,6 +46,14 @@
 .container-md  { width: 100%; max-width: 560px;  margin-inline: auto; padding-inline: 1rem; }
 .container-lg  { width: 100%; max-width: 640px;  margin-inline: auto; padding-inline: 1rem; }
 .container-xl  { width: 100%; max-width: 800px;  margin-inline: auto; padding-inline: 1rem; }
+
+/* Reading-width wrapper for long-form text (help, impressum, docs). Rule §16. */
+.page-reading {
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+  padding: 1.5rem;
+}
 
 /* ── Grid ───────────────────────────────────────────────────────────────────── */
 
