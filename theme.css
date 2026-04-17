@@ -41,6 +41,7 @@
   --color-nav-bg:          #ffffff;
   --color-nav-text:        #1a202c;
   --color-accent:          var(--color-primary);
+  --color-on-accent:       #ffffff;
   --font-sans: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Fira Code", monospace;
   --radius:    0.375rem;
@@ -84,6 +85,7 @@
   --color-dark-hover:      #f8f9fa;
   --color-nav-bg:          #1a1a2e;
   --color-nav-text:        #e2e8f0;
+  --color-on-accent:       #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -113,5 +115,6 @@
     --color-dark-hover:      #f8f9fa;
     --color-nav-bg:          #1a1a2e;
     --color-nav-text:        #e2e8f0;
+    --color-on-accent:       #ffffff;
   }
 }
