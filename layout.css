@@ -180,7 +180,8 @@ body > main { flex: 1; }
   align-items: center;
 }
 
-.header-nav a {
+.header-nav a,
+.header-dropdown-trigger {
   color: var(--color-muted);
   text-decoration: none;
   font-size: 0.85rem;
@@ -188,11 +189,51 @@ body > main { flex: 1; }
   border-radius: 6px;
   transition: background .15s, color .15s;
 }
+.header-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
 .header-nav a:hover,
-.header-nav a.active {
+.header-nav a.active,
+.header-dropdown-trigger:hover,
+.header-dropdown.open .header-dropdown-trigger {
   color: var(--color-text);
   background: var(--color-surface-alt);
 }
+
+/* ── Header nav dropdown (desktop) ─────────────────────────────────────────── */
+
+.header-dropdown { position: relative; }
+
+.header-dropdown-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  min-width: 160px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  z-index: 101;
+}
+.header-dropdown.open .header-dropdown-panel { display: block; }
+.header-dropdown-panel a {
+  display: block;
+  padding: 0.55rem 1rem;
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition: background .15s;
+}
+.header-dropdown-panel a:hover { background: var(--color-surface-alt); }
 
 /* ── User dropdown ───────────────────────────────────────────────────────────── */
 
@@ -274,85 +315,54 @@ body > main { flex: 1; }
   color: var(--color-text);
 }
 
-/* ── Dropdown nav section (mobile AppMenu duplicate) ─────────────────────────
-   Chrome emits .dropdown-nav-section inside .user-dropdown as a mobile
-   duplicate of .header-nav. CSS media queries own the visibility swap —
-   no JS resize listener. */
+/* ── Mobile / desktop panel split ────────────────────────────────────────────
+   .user-dropdown contains .dd-mobile-panel (accordion) on mobile and
+   .dd-desktop-panel (flat links) on desktop. */
 
-.dropdown-nav-section {
-  display: flex;
-  flex-direction: column;
-  padding: 0.25rem 0;
-}
-
-.dropdown-section-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--color-muted);
-  padding: 0.35rem 0.75rem 0.25rem;
-}
-
-.dropdown-nav-section .dropdown-link-btn.active {
-  color: var(--color-primary);
-  font-weight: 600;
-}
-
-.dropdown-nav-section .dropdown-link-btn.active::before {
-  content: '';
-  display: inline-block;
-  width: 3px;
-  height: 1em;
-  background: var(--color-primary);
-  margin-right: 0.5rem;
-  vertical-align: middle;
-  border-radius: 2px;
-}
-
-/* desktop: header-nav is visible; hide the dropdown duplicate */
 @media (min-width: 768px) {
-  .user-dropdown .dropdown-nav-section,
-  .user-dropdown .dropdown-nav-section + .dropdown-divider {
-    display: none;
-  }
+  .dd-mobile-panel { display: none; }
+}
+@media (max-width: 767px) {
+  .dd-desktop-panel { display: none; }
 }
 
-/* ── Mobile drill-down panels ────────────────────────────────────────────────
-   Compound selectors (0,2,0) beat .dropdown-link-btn (0,1,0); later position
-   in this file beats same-specificity rules that appear earlier. No !important. */
+/* ── Mobile accordion ────────────────────────────────────────────────────────
+   Each .dd-acc section is collapsed until JS adds .open. */
 
-.dd-chevron-btn.dropdown-link-btn {
+.dd-acc-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-family: inherit;
+  padding: 0.55rem 1rem;
+  transition: background .15s;
 }
-/* reset.css sets svg{display:block}; override inside flex trigger */
-.dd-chevron-btn.dropdown-link-btn svg { display: inline; flex-shrink: 0; }
+.dd-acc-header:hover { background: var(--color-surface-alt); }
+.dd-acc.open .dd-acc-header { font-weight: 600; }
 
-.dd-back.dropdown-link-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-weight: 600;
-  border-bottom: 1px solid var(--color-border);
-  margin-bottom: 0.25rem;
+.dd-acc-chevron {
+  opacity: 0.6;
+  flex-shrink: 0;
+  transition: transform .15s;
 }
-.dd-back.dropdown-link-btn svg { display: inline; flex-shrink: 0; }
+.dd-acc.open .dd-acc-chevron { transform: rotate(180deg); }
 
-/* Sub-panels are hidden until JS opens them; .dd-main collapses when a sub is open. */
-.dd-sub { display: none; }
-.dd-sub.dd-open { display: block; }
-.dd-main.dd-collapsed { display: none; }
+.dd-acc-body { display: none; }
+.dd-acc.open .dd-acc-body { display: block; }
 
-@media (min-width: 768px) {
-  .dd-mobile { display: none; }
-}
-@media (max-width: 767px) {
-  .user-dropdown .dd-desktop { display: none; }
-}
+.dd-acc-body .dropdown-link-btn { padding-left: 1.5rem; }
 
-/* mobile: hide horizontal nav, show dropdown duplicate; swap chevron → hamburger */
+/* ── Mobile hamburger ────────────────────────────────────────────────────────
+   On mobile the header-nav hides; the user-btn avatar+name gains a hamburger
+   indicator in place of the chevron. */
+
 @media (max-width: 767px) {
   .app-header .header-nav { display: none; }
 

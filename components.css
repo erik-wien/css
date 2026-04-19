@@ -853,6 +853,18 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   -webkit-mask-image: url('./icons/icon-delete.svg');
           mask-image: url('./icons/icon-delete.svg');
 }
+
+/* Inline info-circle SVG. Used as a tooltip/"more info" marker next to text.
+   Uses currentColor for the blue disc so the caller controls theming via the
+   enclosing element (default: --color-info). Shipped as icons/info-circle.svg
+   for anyone who wants the standalone file. */
+.icon-info-circle {
+  display: inline-block;
+  width: 0.9em; height: 0.9em;
+  vertical-align: -0.1em;
+  color: var(--color-info);
+  flex-shrink: 0;
+}
 .ui-icon-ban {
   -webkit-mask-image: url('./icons/icon-ban.svg');
           mask-image: url('./icons/icon-ban.svg');

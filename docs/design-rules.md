@@ -149,6 +149,64 @@ Available hues: `red`, `blue`, `green`, `yellow`, `orange`, `purple`, `turquoise
 - Body content must have `padding-top: var(--app-header-height)` (the shared library no longer reserves this via `sticky`; the custom property is declared on `:root` in shared `layout.css`, see §12a).
 - On mobile (`≤767px`), the search/select and AppMenu may collapse into a hamburger or drawer; the user area stays visible.
 
+## 12b. Mobile accordion in `.user-dropdown` (mandatory when any `appMenu` item has children)
+
+On mobile the header nav hides and the `[Avatar ☰]` user-button opens a combined panel. The panel uses two segregated children: `.dd-mobile-panel` (accordion, shown only on mobile) and `.dd-desktop-panel` (flat links, shown only on desktop). `Erikr\Chrome\Header::render()` emits both; CSS media queries own the visibility swap — no JS resize listener.
+
+### Markup contract (emitted by `Header::render()`)
+
+```html
+<div class="user-dropdown" id="user-dropdown">
+
+  <!-- mobile only -->
+  <div class="dd-mobile-panel">
+    <!-- flat nav items appear as direct links -->
+    <a href="…" class="dropdown-link-btn">Home</a>
+    <!-- nav groups with children become accordion sections -->
+    <div class="dd-acc">
+      <button class="dd-acc-header" aria-expanded="false">Test <svg class="dd-acc-chevron">…</svg></button>
+      <div class="dd-acc-body">
+        <a href="…" class="dropdown-link-btn">Sub-link</a>
+      </div>
+    </div>
+    <div class="dropdown-divider"></div>
+    <!-- user section is always an accordion -->
+    <div class="dd-acc">
+      <button class="dd-acc-header" aria-expanded="false">username <svg class="dd-acc-chevron">…</svg></button>
+      <div class="dd-acc-body">
+        <a href="…" class="dropdown-link-btn">Einstellungen</a>
+        …theme row, logout…
+      </div>
+    </div>
+  </div>
+
+  <!-- desktop only -->
+  <div class="dd-desktop-panel">
+    <span class="dropdown-username">username</span>
+    …direct links, theme row, logout…
+  </div>
+
+</div>
+```
+
+- `.dd-mobile-panel` — hidden at `≥768px`.
+- `.dd-desktop-panel` — hidden at `≤767px`.
+- `.dd-acc` — accordion section. JS adds `.open` to expand; CSS shows `.dd-acc-body` and rotates `.dd-acc-chevron`.
+- `.dd-acc-header` — the clickable `<button>` acting as section title. Carries `aria-expanded`, updated by JS.
+- `.dd-acc-body` — collapsible content, `display:none` until `.dd-acc.open`.
+- `.dd-acc-chevron` — the `<svg>` inside the header; rotates 180° when open via CSS transition.
+
+### JS contract (inline script in `Header::render()`)
+
+- Click `.dd-acc-header` → toggle `.open` on the parent `.dd-acc`; sync `aria-expanded` on the header.
+- Click **outside** `.user-menu` → close the menu (`menu.classList.remove("open")`) **and** collapse all open accordions (`collapseAcc()`).
+- Clicks inside `.user-menu` that are not `.dd-acc-header` → no-op on the menu itself (stopPropagation prevents the outside-click handler from firing).
+
+### Pitfalls
+
+1. **Browser caches CSS and JS aggressively.** Every stylesheet and script link must include a cache-bust query such as `?v=<?= APP_BUILD ?>`. Without this, stale files silently break new classes.
+2. **`prefers-reduced-motion`** — `layout.css` neutralises all transitions when the user opts in, including `.dd-acc-chevron` rotation. The accordion still works; the animation just skips.
+
 ## 12a. Full-viewport app shells (mandatory when applicable)
 
 §12 and §13 describe a **scrolling-document** layout: body is taller than the viewport, `padding-top`/`padding-bottom` reserve space for fixed chrome, the user scrolls. That pattern is correct for most pages (preferences, admin, help, reading content).
