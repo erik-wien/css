@@ -315,49 +315,47 @@ body > main { flex: 1; }
   color: var(--color-text);
 }
 
-/* ── Mobile / desktop panel split ────────────────────────────────────────────
-   .user-dropdown contains .dd-mobile-panel (accordion) on mobile and
-   .dd-desktop-panel (flat links) on desktop. */
+/* ── Sub-panel drill-down ────────────────────────────────────────────────────
+   .dd-main is the default panel; .dd-sub panels slide in on mobile when JS
+   adds .dd-open / .dd-collapsed. On desktop sub-panels are never activated. */
 
-@media (min-width: 768px) {
-  .dd-mobile-panel { display: none; }
+.dd-main.dd-collapsed { display: none; }
+.dd-sub { display: none; }
+.dd-sub.dd-open { display: block; }
+
+/* .dd-desktop: direct links shown on desktop, hidden on mobile (use trigger instead).
+   .dd-mobile:  trigger/back buttons shown on mobile, hidden on desktop. */
+@media (min-width: 768px) { .dd-mobile { display: none; } }
+@media (max-width: 767px)  { .dd-desktop { display: none; } }
+
+/* ── Nav section in dropdown (mobile only) ───────────────────────────────────
+   Desktop uses .header-nav; on mobile those items are mirrored here so the
+   user-dropdown acts as the single hamburger affordance. */
+
+@media (min-width: 768px) { .dropdown-nav-section { display: none; } }
+
+.dropdown-section-label {
+  display: block;
+  padding: 0.4rem 1rem 0.2rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
 }
-@media (max-width: 767px) {
-  .dd-desktop-panel { display: none; }
+
+.dropdown-nav-section a.active,
+.dropdown-nav-section .active {
+  color: var(--color-accent);
+  font-weight: 600;
 }
 
-/* ── Mobile accordion ────────────────────────────────────────────────────────
-   Each .dd-acc section is collapsed until JS adds .open. */
-
-.dd-acc-header {
+/* Trigger buttons that show a chevron (drill-down, sub-menu) */
+.dd-chevron-btn {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  background: none;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  color: var(--color-text);
-  font-size: 0.85rem;
-  font-family: inherit;
-  padding: 0.55rem 1rem;
-  transition: background .15s;
 }
-.dd-acc-header:hover { background: var(--color-surface-alt); }
-.dd-acc.open .dd-acc-header { font-weight: 600; }
-
-.dd-acc-chevron {
-  opacity: 0.6;
-  flex-shrink: 0;
-  transition: transform .15s;
-}
-.dd-acc.open .dd-acc-chevron { transform: rotate(180deg); }
-
-.dd-acc-body { display: none; }
-.dd-acc.open .dd-acc-body { display: block; }
-
-.dd-acc-body .dropdown-link-btn { padding-left: 1.5rem; }
 
 /* ── Mobile hamburger ────────────────────────────────────────────────────────
    On mobile the header-nav hides; the user-btn avatar+name gains a hamburger

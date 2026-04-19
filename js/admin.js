@@ -160,11 +160,67 @@
     if (initial) activateTab(initial);
   }
 
+  /* ── Reset-password preview → confirm modal ─────────────────────────────── */
+
+  function wireResetPreview() {
+    document.querySelectorAll('.btn-reset').forEach(function (btn) {
+      btn.addEventListener('click', async function () {
+        var id = btn.dataset.id;
+        if (!id) return;
+
+        var data = await adminPost('admin_user_reset_preview', { id: id });
+        if (!data.ok) {
+          showAlert(data.error || 'Vorschau nicht verfügbar.', 'danger');
+          return;
+        }
+
+        var modal = document.getElementById('resetPasswordModal');
+        if (!modal) {
+          // Fallback: fire immediately if modal not present (backwards compat)
+          var r = await adminPost('admin_user_reset', { id: id });
+          showAlert(r.ok ? 'Passwort-Reset versendet.' : (r.error || 'Fehler.'), r.ok ? 'success' : 'danger');
+          return;
+        }
+
+        document.getElementById('resetPwId').value        = id;
+        document.getElementById('resetPwUsername').textContent = data.username || '?';
+        document.getElementById('resetPwEmail').textContent    = data.email    || '?';
+        var ipsEl = document.getElementById('resetPwIps');
+        ipsEl.textContent = (data.ips && data.ips.length) ? data.ips.join(', ') : 'keine';
+
+        clearAlerts('resetPasswordAlerts');
+        openModal('resetPasswordModal');
+      });
+    });
+
+    var confirmBtn = document.getElementById('resetPwConfirm');
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', async function () {
+        var id = document.getElementById('resetPwId').value;
+        if (!id) return;
+        confirmBtn.disabled = true;
+        var r = await adminPost('admin_user_reset', { id: id });
+        confirmBtn.disabled = false;
+        if (r.ok) {
+          closeModal('resetPasswordModal');
+          var msg = 'Passwort-Reset versendet.';
+          if (r.unblocked_ips && r.unblocked_ips.length) {
+            msg += ' IPs entsperrt: ' + r.unblocked_ips.join(', ');
+          }
+          showAlert(msg, 'success');
+        } else {
+          showAlert(r.error || 'Fehler beim Reset.', 'danger', 'resetPasswordAlerts');
+        }
+      });
+    }
+  }
+
   /* ── Bootstrap ───────────────────────────────────────────────────────────── */
 
   function init() {
     wireModals();
     wireTabs();
+    wireResetPreview();
   }
 
   if (document.readyState === 'loading') {
