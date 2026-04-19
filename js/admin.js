@@ -163,6 +163,12 @@
   /* ── Reset-password preview → confirm modal ─────────────────────────────── */
 
   function wireResetPreview() {
+    // Only intercept .btn-reset clicks when the confirmation modal is present.
+    // Apps that have not yet added renderResetPasswordModal() keep their existing
+    // inline handler untouched — no double-POST regression.
+    var modal = document.getElementById('resetPasswordModal');
+    if (!modal) return;
+
     document.querySelectorAll('.btn-reset').forEach(function (btn) {
       btn.addEventListener('click', async function () {
         var id = btn.dataset.id;
@@ -174,17 +180,9 @@
           return;
         }
 
-        var modal = document.getElementById('resetPasswordModal');
-        if (!modal) {
-          // Fallback: fire immediately if modal not present (backwards compat)
-          var r = await adminPost('admin_user_reset', { id: id });
-          showAlert(r.ok ? 'Passwort-Reset versendet.' : (r.error || 'Fehler.'), r.ok ? 'success' : 'danger');
-          return;
-        }
-
-        document.getElementById('resetPwId').value        = id;
-        document.getElementById('resetPwUsername').textContent = data.username || '?';
-        document.getElementById('resetPwEmail').textContent    = data.email    || '?';
+        document.getElementById('resetPwId').value              = id;
+        document.getElementById('resetPwUsername').textContent  = data.username || '?';
+        document.getElementById('resetPwEmail').textContent     = data.email    || '?';
         var ipsEl = document.getElementById('resetPwIps');
         ipsEl.textContent = (data.ips && data.ips.length) ? data.ips.join(', ') : 'keine';
 
