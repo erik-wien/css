@@ -1,5 +1,51 @@
 /* components.css — shared UI components */
 
+/* ── Header nav dropdown ─────────────────────────────────────────────────────── */
+
+.header-dropdown { position: relative; }
+
+.header-dropdown-trigger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  padding: 0.25rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: var(--radius);
+}
+.header-dropdown-trigger:hover { background: var(--color-surface-alt); }
+.header-dropdown-trigger:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.header-dropdown-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  min-width: 12rem;
+  z-index: 200;
+}
+.header-dropdown.open .header-dropdown-panel { display: block; }
+
+.header-dropdown-panel a {
+  display: block;
+  padding: 0.4rem 0.75rem;
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+.header-dropdown-panel a:hover { background: var(--color-surface-alt); }
+
 /* ── Buttons ────────────────────────────────────────────────────────────────── */
 
 .btn {
@@ -296,7 +342,7 @@
 
 /* ── Tabs ───────────────────────────────────────────────────────────────────── */
 /* Used by Rule §15 admin screens and anywhere a page needs tabbed sections.
-   Pair with the JS helper `activateTab(name)` from ~/Git/css/js/admin.js.     */
+   Pair with the JS helper `activateTab(name)` from ~/Git/css_library/js/admin.js.     */
 
 .tab-bar {
   display: flex;
@@ -366,12 +412,50 @@
   appearance: none;
   transition: border-color .15s, box-shadow .15s;
 }
-.form-control:focus {
-  outline: none;
+.form-control:focus { outline: none; }
+.form-control:focus-visible {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--color-primary) 25%, transparent);
 }
-.form-control::placeholder { color: var(--color-muted); opacity: 1; }
+.form-control::placeholder { color: var(--color-muted); opacity: 1; font-style: normal; }
+
+/* Hide browser-supplied ⊗ on search inputs to prevent double-button */
+input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
+
+/* ── Input clear button ──────────────────────────────────────────────────────
+   Injected by js/forms.js. Visible only when the field has content, via
+   :has() + :placeholder-shown (requires a non-empty placeholder attribute). */
+
+.input-clear-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-clear-wrap > .form-control {
+  padding-right: 2rem;
+}
+
+.input-clear-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  background: none;
+  border: 0;
+  padding: 0 0.25rem;
+  color: var(--color-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.input-clear-btn:hover { color: var(--color-text); }
+
+.input-clear-wrap:has(> .form-control:not(:placeholder-shown):not([readonly]):not([disabled])) > .input-clear-btn {
+  display: inline-block;
+}
 
 .form-control-sm {
   padding: 0.25rem 0.5rem;
@@ -396,8 +480,8 @@
   background-size: 16px 12px;
   cursor: pointer;
 }
-.form-select:focus {
-  outline: none;
+.form-select:focus { outline: none; }
+.form-select:focus-visible {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--color-primary) 25%, transparent);
 }
@@ -793,6 +877,54 @@
   -webkit-mask-image: url('./icons/icon-close.svg');
           mask-image: url('./icons/icon-close.svg');
 }
+
+/* ── Palette button family ───────────────────────────────────────────────────
+   User-pickable accent buttons bound directly to --palette-* tokens.
+   Use ONLY for user-selected accents (favourites, personal colour preferences).
+   Never use these classes to convey UI semantics — use .btn-danger, .btn-success
+   etc. for that. One solid + one outline variant per palette hue. */
+
+.btn-color-red         { background: var(--palette-red-bright);       color: #fff;              border: 1px solid var(--palette-red-dark); }
+.btn-color-red:hover   { background: var(--palette-red-dark);         color: #fff; }
+.btn-color-blue        { background: var(--palette-blue-dark);        color: #fff;              border: 1px solid #1e4268; }
+.btn-color-blue:hover  { background: #1e4268;                         color: #fff; }
+.btn-color-green       { background: var(--palette-green-bright);     color: #fff;              border: 1px solid var(--palette-green-dark); }
+.btn-color-green:hover { background: var(--palette-green-dark);       color: #fff; }
+.btn-color-yellow      { background: var(--palette-yellow-bright);    color: #000;              border: 1px solid var(--palette-yellow-dark); }
+.btn-color-yellow:hover{ background: var(--palette-yellow-dark);      color: #000; }
+.btn-color-orange      { background: var(--palette-orange-bright);    color: #000;              border: 1px solid var(--palette-orange-dark); }
+.btn-color-orange:hover{ background: var(--palette-orange-dark);      color: #000; }
+.btn-color-purple      { background: var(--palette-purple-bright);    color: #fff;              border: 1px solid var(--palette-purple-dark); }
+.btn-color-purple:hover{ background: var(--palette-purple-dark);      color: #fff; }
+.btn-color-turquoise      { background: var(--palette-turquoise-bright); color: #000;           border: 1px solid var(--palette-turquoise-dark); }
+.btn-color-turquoise:hover{ background: var(--palette-turquoise-dark);  color: #fff; }
+.btn-color-grey-light      { background: var(--palette-grey-light);   color: var(--color-text); border: 1px solid var(--palette-grey-dark); }
+.btn-color-grey-light:hover{ background: var(--palette-grey-dark);    color: #fff; }
+.btn-color-grey-dark       { background: var(--palette-grey-dark);    color: #fff;              border: 1px solid #4a4a4a; }
+.btn-color-grey-dark:hover { background: #4a4a4a;                     color: #fff; }
+.btn-color-neutral      { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); }
+.btn-color-neutral:hover{ background: var(--color-surface-alt); }
+
+.btn-outline-color-red         { background: transparent; color: var(--palette-red-bright);       border: 1px solid var(--palette-red-bright); }
+.btn-outline-color-red:hover   { background: var(--palette-red-bright);       color: #fff; }
+.btn-outline-color-blue        { background: transparent; color: var(--palette-blue-dark);        border: 1px solid var(--palette-blue-dark); }
+.btn-outline-color-blue:hover  { background: var(--palette-blue-dark);        color: #fff; }
+.btn-outline-color-green       { background: transparent; color: var(--palette-green-bright);     border: 1px solid var(--palette-green-bright); }
+.btn-outline-color-green:hover { background: var(--palette-green-bright);     color: #fff; }
+.btn-outline-color-yellow       { background: transparent; color: var(--palette-yellow-dark);    border: 1px solid var(--palette-yellow-bright); }
+.btn-outline-color-yellow:hover { background: var(--palette-yellow-bright);   color: #000; }
+.btn-outline-color-orange       { background: transparent; color: var(--palette-orange-dark);    border: 1px solid var(--palette-orange-bright); }
+.btn-outline-color-orange:hover { background: var(--palette-orange-bright);   color: #000; }
+.btn-outline-color-purple       { background: transparent; color: var(--palette-purple-bright);  border: 1px solid var(--palette-purple-bright); }
+.btn-outline-color-purple:hover { background: var(--palette-purple-bright);   color: #fff; }
+.btn-outline-color-turquoise       { background: transparent; color: var(--palette-turquoise-dark);  border: 1px solid var(--palette-turquoise-bright); }
+.btn-outline-color-turquoise:hover { background: var(--palette-turquoise-bright); color: #000; }
+.btn-outline-color-grey-light       { background: transparent; color: var(--palette-grey-dark);  border: 1px solid var(--palette-grey-light); }
+.btn-outline-color-grey-light:hover { background: var(--palette-grey-light);  color: var(--color-text); }
+.btn-outline-color-grey-dark        { background: transparent; color: var(--palette-grey-dark);  border: 1px solid var(--palette-grey-dark); }
+.btn-outline-color-grey-dark:hover  { background: var(--palette-grey-dark);   color: #fff; }
+.btn-outline-color-neutral        { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); }
+.btn-outline-color-neutral:hover  { background: var(--color-surface-alt); }
 
 /* Compact icon-only button: square, tight padding, 1.1em icon.
    Usage: <button class="btn btn-sm btn-icon" title="…" aria-label="…">

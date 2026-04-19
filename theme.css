@@ -2,46 +2,73 @@
    Variables only, no rules. Toggle via data-theme="dark"|"light" on <html>.
    "auto" (no attribute or data-theme="auto") follows prefers-color-scheme.
    Consumer projects override :root / [data-theme] to set their own palette.
+
+   Three-layer architecture:
+     Layer 1 — palette: concrete colour values (edit hex values only here).
+     Layer 2 — correlation: semantic role → palette var (may differ per theme).
+     Theme-neutral: surface, text, border, radius, shadow, spacing.
 */
 
 :root {
-  /* ── Jardyx CI palette (raw — reference via semantic tokens below, do not use in components) ── */
-  --jardyx-red:        #e2001a;
-  --jardyx-blue:       #275382;
-  --jardyx-green:      #587b37;
-  --jardyx-yellow:     #d6a733;
-  --jardyx-purple:     #7b2484;
-  --jardyx-orange:     #e27708;
-  --jardyx-darkgrey:   #606060;
-  --jardyx-lightgrey:  #e0e0e0;
+  /* ── Layer 1: Palette ─────────────────────────────────────────────────────
+     Concrete colours with "bright" (lighter/saturated) and "dark" (deeper)
+     stops per hue, plus grey-light/grey-dark and neutral (transparent).
+     Reference these only via the correlation block below or .btn-color-* —
+     never use palette vars directly in component or app CSS. */
+  --palette-red-bright:       #e2001a;
+  --palette-red-dark:         #b8001a;
+  --palette-blue-bright:      #4e7fc5;
+  --palette-blue-dark:        #275382;
+  --palette-green-bright:     #587b37;
+  --palette-green-dark:       #456028;
+  --palette-yellow-bright:    #d6a733;
+  --palette-yellow-dark:      #b8901c;
+  --palette-orange-bright:    #e27708;
+  --palette-orange-dark:      #c9762f;
+  --palette-purple-bright:    #b343cb;
+  --palette-purple-dark:      #7b2484;
+  --palette-turquoise-bright: #17b8c5;
+  --palette-turquoise-dark:   #009193;
+  --palette-grey-light:       #e0e0e0;
+  --palette-grey-dark:        #606060;
+  --palette-neutral:          transparent;
 
-  --color-bg:          #f0f2f7;
-  --color-surface:     #ffffff;
-  --color-surface-alt: var(--jardyx-lightgrey);
-  --color-card:        #ffffff;
-  --color-text:        #1a202c;
-  --color-muted:       var(--jardyx-darkgrey);
-  --color-border:      #cbd5e0;
-  --color-primary:         var(--jardyx-red);
-  --color-primary-hover:   #b8001a;
-  --color-secondary:       var(--jardyx-darkgrey);
+  /* Jardyx CI brand alias — canonical mark, kept for back-compat. */
+  --jardyx-red: var(--palette-red-bright);
+
+  /* ── Layer 2: Correlation ────────────────────────────────────────────────
+     Maps semantic roles to palette. Edit here to reroute a role globally;
+     per-app palette overrides go in project-theme.css using the same names. */
+  --color-primary:         var(--palette-grey-dark);
+  --color-primary-hover:   #4a4a4a;
+  --color-secondary:       var(--palette-grey-dark);
   --color-secondary-hover: #4d4d4d;
-  --color-secondary-alt:   var(--jardyx-lightgrey);
-  --color-danger:          #9a0014;
-  --color-danger-hover:    #7a0010;
-  --color-success:         var(--jardyx-green);
-  --color-success-hover:   #456028;
+  --color-secondary-alt:   var(--palette-grey-light);
+  --color-danger:          var(--palette-red-bright);
+  --color-danger-hover:    var(--palette-red-dark);
+  --color-success:         var(--palette-green-bright);
+  --color-success-hover:   var(--palette-green-dark);
   --color-success-alt:     #dbe7cc;
-  --color-warning:         var(--jardyx-yellow);
-  --color-warning-hover:   #b8901c;
-  --color-info:            var(--jardyx-blue);
+  --color-warning:         var(--palette-yellow-bright);
+  --color-warning-hover:   var(--palette-yellow-dark);
+  --color-info:            var(--palette-blue-dark);
   --color-info-hover:      #1e4268;
   --color-dark:            #212529;
   --color-dark-hover:      #1a1e21;
-  --color-nav-bg:          #ffffff;
-  --color-nav-text:        #1a202c;
-  --color-accent:          var(--color-primary);
+  --color-accent:          var(--palette-red-bright);
   --color-on-accent:       #ffffff;
+
+  /* ── Theme-neutral ───────────────────────────────────────────────────────*/
+  --color-bg:          #f0f2f7;
+  --color-surface:     #ffffff;
+  --color-surface-alt: var(--palette-grey-light);
+  --color-card:        #ffffff;
+  --color-text:        #1a202c;
+  --color-muted:       var(--palette-grey-dark);
+  --color-border:      #cbd5e0;
+  --color-nav-bg:      #ffffff;
+  --color-nav-text:    #1a202c;
+
   --font-sans: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Fira Code", monospace;
   --radius:    0.375rem;
@@ -60,20 +87,33 @@
 }
 
 [data-theme="dark"] {
-  --color-bg:          #0f0f1a;
-  --color-surface:     #1a1a2e;
-  --color-surface-alt: #16213e;
-  --color-card:        #16213e;
-  --color-text:        #e2e8f0;
-  --color-muted:       #8a8a8a;
-  --color-border:      #2d3748;
-  --color-primary:         #ff3347;
-  --color-primary-hover:   #ff5c6b;
+  /* Layer 1 — palette (same concrete values; listed for completeness) */
+  --palette-red-bright:       #e2001a;
+  --palette-red-dark:         #b8001a;
+  --palette-blue-bright:      #4e7fc5;
+  --palette-blue-dark:        #275382;
+  --palette-green-bright:     #587b37;
+  --palette-green-dark:       #456028;
+  --palette-yellow-bright:    #d6a733;
+  --palette-yellow-dark:      #b8901c;
+  --palette-orange-bright:    #e27708;
+  --palette-orange-dark:      #c9762f;
+  --palette-purple-bright:    #b343cb;
+  --palette-purple-dark:      #7b2484;
+  --palette-turquoise-bright: #17b8c5;
+  --palette-turquoise-dark:   #009193;
+  --palette-grey-light:       #e0e0e0;
+  --palette-grey-dark:        #606060;
+  --palette-neutral:          transparent;
+
+  /* Layer 2 — correlation (dark-mode semantic overrides) */
+  --color-primary:         #8a8a8a;
+  --color-primary-hover:   #a3a3a3;
   --color-secondary:       #8a8a8a;
   --color-secondary-hover: #a3a3a3;
   --color-secondary-alt:   #2c3034;
-  --color-danger:          var(--jardyx-red);
-  --color-danger-hover:    #b8001a;
+  --color-danger:          var(--palette-red-bright);
+  --color-danger-hover:    var(--palette-red-dark);
   --color-success:         #7ba550;
   --color-success-hover:   #8fbf5e;
   --color-success-alt:     #1a2e10;
@@ -83,27 +123,50 @@
   --color-info-hover:      #7dabd9;
   --color-dark:            #dee2e6;
   --color-dark-hover:      #f8f9fa;
-  --color-nav-bg:          #1a1a2e;
-  --color-nav-text:        #e2e8f0;
+  --color-accent:          var(--palette-red-bright);
   --color-on-accent:       #ffffff;
+
+  /* Theme-neutral overrides */
+  --color-bg:          #0f0f1a;
+  --color-surface:     #1a1a2e;
+  --color-surface-alt: #16213e;
+  --color-card:        #16213e;
+  --color-text:        #e2e8f0;
+  --color-muted:       #8a8a8a;
+  --color-border:      #2d3748;
+  --color-nav-bg:      #1a1a2e;
+  --color-nav-text:    #e2e8f0;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-bg:          #0f0f1a;
-    --color-surface:     #1a1a2e;
-    --color-surface-alt: #16213e;
-    --color-card:        #16213e;
-    --color-text:        #e2e8f0;
-    --color-muted:       #8a8a8a;
-    --color-border:      #2d3748;
-    --color-primary:         #ff3347;
-    --color-primary-hover:   #ff5c6b;
+    /* Layer 1 — palette */
+    --palette-red-bright:       #e2001a;
+    --palette-red-dark:         #b8001a;
+    --palette-blue-bright:      #4e7fc5;
+    --palette-blue-dark:        #275382;
+    --palette-green-bright:     #587b37;
+    --palette-green-dark:       #456028;
+    --palette-yellow-bright:    #d6a733;
+    --palette-yellow-dark:      #b8901c;
+    --palette-orange-bright:    #e27708;
+    --palette-orange-dark:      #c9762f;
+    --palette-purple-bright:    #b343cb;
+    --palette-purple-dark:      #7b2484;
+    --palette-turquoise-bright: #17b8c5;
+    --palette-turquoise-dark:   #009193;
+    --palette-grey-light:       #e0e0e0;
+    --palette-grey-dark:        #606060;
+    --palette-neutral:          transparent;
+
+    /* Layer 2 — correlation */
+    --color-primary:         #8a8a8a;
+    --color-primary-hover:   #a3a3a3;
     --color-secondary:       #8a8a8a;
     --color-secondary-hover: #a3a3a3;
     --color-secondary-alt:   #2c3034;
-    --color-danger:          var(--jardyx-red);
-    --color-danger-hover:    #b8001a;
+    --color-danger:          var(--palette-red-bright);
+    --color-danger-hover:    var(--palette-red-dark);
     --color-success:         #7ba550;
     --color-success-hover:   #8fbf5e;
     --color-success-alt:     #1a2e10;
@@ -113,8 +176,18 @@
     --color-info-hover:      #7dabd9;
     --color-dark:            #dee2e6;
     --color-dark-hover:      #f8f9fa;
-    --color-nav-bg:          #1a1a2e;
-    --color-nav-text:        #e2e8f0;
+    --color-accent:          var(--palette-red-bright);
     --color-on-accent:       #ffffff;
+
+    /* Theme-neutral overrides */
+    --color-bg:          #0f0f1a;
+    --color-surface:     #1a1a2e;
+    --color-surface-alt: #16213e;
+    --color-card:        #16213e;
+    --color-text:        #e2e8f0;
+    --color-muted:       #8a8a8a;
+    --color-border:      #2d3748;
+    --color-nav-bg:      #1a1a2e;
+    --color-nav-text:    #e2e8f0;
   }
 }

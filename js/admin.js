@@ -1,4 +1,4 @@
-/* ~/Git/css/js/admin.js
+/* ~/Git/css_library/js/admin.js
  *
  * Shared client-side helpers for admin screens. Required by Rule §15.5.
  *
@@ -22,6 +22,7 @@
     if (!box) return;
     const div = document.createElement('div');
     div.className = 'alert alert-' + (type || 'info');
+    div.setAttribute('role', 'alert');
     div.textContent = msg;
     box.appendChild(div);
     setTimeout(function () { div.remove(); }, 5000);
@@ -54,18 +55,37 @@
 
   /* ── Modals ──────────────────────────────────────────────────────────────── */
 
+  var _previouslyFocused = null;
+
+  function getFocusable(container) {
+    return Array.from(container.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), ' +
+      'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter(function (el) {
+      return !el.closest('[hidden]') && el.offsetParent !== null;
+    });
+  }
+
   function openModal(id) {
-    const m = document.getElementById(id);
+    var m = document.getElementById(id);
     if (!m) return;
+    _previouslyFocused = document.activeElement;
     m.classList.add('show');
     m.setAttribute('aria-hidden', 'false');
+    var focusable = getFocusable(m);
+    var target = focusable.length ? focusable[0] : m.querySelector('.modal-dialog');
+    if (target) target.focus();
   }
 
   function closeModal(id) {
-    const m = document.getElementById(id);
+    var m = document.getElementById(id);
     if (!m) return;
     m.classList.remove('show');
     m.setAttribute('aria-hidden', 'true');
+    if (_previouslyFocused && typeof _previouslyFocused.focus === 'function') {
+      _previouslyFocused.focus();
+      _previouslyFocused = null;
+    }
   }
 
   function wireModals() {
@@ -74,13 +94,25 @@
     });
     document.querySelectorAll('[data-modal-close]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        const m = btn.closest('.modal');
+        var m = btn.closest('.modal');
         if (m) closeModal(m.id);
       });
     });
     document.querySelectorAll('.modal').forEach(function (m) {
       m.addEventListener('click', function (e) {
         if (e.target === m) closeModal(m.id);
+      });
+      m.addEventListener('keydown', function (e) {
+        if (!m.classList.contains('show') || e.key !== 'Tab') return;
+        var focusable = getFocusable(m);
+        if (!focusable.length) return;
+        var first = focusable[0];
+        var last  = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
       });
     });
     document.addEventListener('keydown', function (e) {

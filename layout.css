@@ -28,6 +28,46 @@ body.app-shell .app-shell-root {
   flex-direction: column;
 }
 
+/* ── Motion safety ──────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Skip-to-content link (§5 accessibility) ────────────────────────────────── */
+
+.skip-link {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+.skip-link:focus {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  width: auto; height: auto;
+  padding: 0.5rem 1rem;
+  clip: auto;
+  white-space: normal;
+  background: var(--palette-red-bright);
+  color: #fff;
+  border-radius: var(--radius);
+  z-index: 9999;
+  font-weight: 600;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  text-decoration: none;
+}
+
 /* ── Containers ─────────────────────────────────────────────────────────────── */
 
 .container {
@@ -128,6 +168,10 @@ body > main { flex: 1; }
 .header-logo { display: block; flex-shrink: 0; }
 .header-appname { font-size: 1.1rem; font-weight: 600; color: var(--color-text); }
 
+@media (max-width: 575px) {
+  .header-appname { display: none; }
+}
+
 /* ── Header nav ──────────────────────────────────────────────────────────────── */
 
 .header-nav {
@@ -195,7 +239,9 @@ body > main { flex: 1; }
   border: 1px solid var(--color-border);
   border-radius: 8px;
   min-width: 160px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: min(80dvh, 480px);
   box-shadow: var(--shadow);
   z-index: 100;
 }
@@ -226,6 +272,107 @@ body > main { flex: 1; }
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-text);
+}
+
+/* ── Dropdown nav section (mobile AppMenu duplicate) ─────────────────────────
+   Chrome emits .dropdown-nav-section inside .user-dropdown as a mobile
+   duplicate of .header-nav. CSS media queries own the visibility swap —
+   no JS resize listener. */
+
+.dropdown-nav-section {
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem 0;
+}
+
+.dropdown-section-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  padding: 0.35rem 0.75rem 0.25rem;
+}
+
+.dropdown-nav-section .dropdown-link-btn.active {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.dropdown-nav-section .dropdown-link-btn.active::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 1em;
+  background: var(--color-primary);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  border-radius: 2px;
+}
+
+/* desktop: header-nav is visible; hide the dropdown duplicate */
+@media (min-width: 768px) {
+  .user-dropdown .dropdown-nav-section,
+  .user-dropdown .dropdown-nav-section + .dropdown-divider {
+    display: none;
+  }
+}
+
+/* ── Mobile drill-down panels ────────────────────────────────────────────────
+   Compound selectors (0,2,0) beat .dropdown-link-btn (0,1,0); later position
+   in this file beats same-specificity rules that appear earlier. No !important. */
+
+.dd-chevron-btn.dropdown-link-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+/* reset.css sets svg{display:block}; override inside flex trigger */
+.dd-chevron-btn.dropdown-link-btn svg { display: inline; flex-shrink: 0; }
+
+.dd-back.dropdown-link-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 0.25rem;
+}
+.dd-back.dropdown-link-btn svg { display: inline; flex-shrink: 0; }
+
+/* Sub-panels are hidden until JS opens them; .dd-main collapses when a sub is open. */
+.dd-sub { display: none; }
+.dd-sub.dd-open { display: block; }
+.dd-main.dd-collapsed { display: none; }
+
+@media (min-width: 768px) {
+  .dd-mobile { display: none; }
+}
+@media (max-width: 767px) {
+  .user-dropdown .dd-desktop { display: none; }
+}
+
+/* mobile: hide horizontal nav, show dropdown duplicate; swap chevron → hamburger */
+@media (max-width: 767px) {
+  .app-header .header-nav { display: none; }
+
+  .user-btn .chevron { display: none; }
+  .user-btn::after {
+    content: '';
+    width: 16px;
+    height: 12px;
+    background-image: linear-gradient(
+      to bottom,
+      currentColor 0 2px,
+      transparent 2px 5px,
+      currentColor 5px 7px,
+      transparent 7px 10px,
+      currentColor 10px 12px
+    );
+    display: inline-block;
+    margin-left: 0.3rem;
+    flex-shrink: 0;
+  }
 }
 
 .theme-row {

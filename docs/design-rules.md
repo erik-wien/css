@@ -35,8 +35,14 @@ Project palette overrides go in a `project-theme.css` that loads **after** the s
 ## 5. Accessibility floor
 
 - Semantic HTML first; ARIA only when semantics aren't enough.
-- Focus styles must be visible — never `outline: none` without a visible replacement.
+- Focus styles must be visible — never `outline: none` without a visible replacement. Use `:focus-visible` (not `:focus`) for the ring so mouse-click focus stays clean.
 - Color contrast: WCAG AA minimum.
+- Every page must have `id="main-content"` on its top-level `<main>` — `Header::render()` emits a `.skip-link` that jumps to it.
+- Respect `prefers-reduced-motion` — shared `layout.css` neutralises all animations/transitions for users who opt in.
+- Dynamic alerts injected via `showAlert()` automatically carry `role="alert"`. Static PHP-rendered alerts need `role="alert"` (errors) or `aria-live="polite"` (informational) added manually.
+- Modal focus flow: `openModal()` traps Tab inside the dialog and restores focus on close. Modal markup carries `role="dialog"`, `aria-modal="true"`, `aria-labelledby` — the shared `UserModals` partial handles this.
+- The `.user-btn` trigger carries `aria-haspopup="menu"`, `aria-controls`, and `aria-expanded` kept in sync by the header script.
+- Decorative SVGs carry `aria-hidden="true"`. Meaningful SVGs need `<title>` or `aria-label`.
 
 ## 6. PHP web-page patterns
 
@@ -73,10 +79,30 @@ The shared `.btn` is intentionally a neutral outlined button (transparent backgr
 - Deploy with `rsync --copy-links` so symlinked `shared/` is resolved into real files at the destination.
 - macOS permissions quirk on files synced from another account: fix with `chown -R erikr /path/to/repo/` before rsync.
 
-## 9. Anti-generic-AI-look
+## 9. Palette vs. semantic split (mandatory)
+
+`theme.css` has two layers above the neutral surface tokens:
+
+- **Layer 1 — palette** (`--palette-{hue}-{bright|dark}`, `--palette-grey-{light|dark}`, `--palette-neutral`): concrete hex values. Edit only here when a colour needs to change. Never reference palette vars in component or app CSS directly.
+- **Layer 2 — correlation** (`--color-primary`, `--color-danger`, `--color-success`, …): semantic roles that point at palette vars. These are what components and apps use.
+
+### `.btn-primary` is neutral grey, not brand red
+
+`--color-primary` is bound to `--palette-grey-dark`. `.btn-primary` reads as "neutral default action" and is visually distinct from `.btn-danger` (red) and `.btn-outline-success` (green). **Do not use `.btn-primary` to convey brand identity.**
+
+Brand red lives in the palette as `--palette-red-bright` (`#e2001a`) and is reachable via:
+- `--color-accent` — for logos, hero text, decorative brand marks
+- `.btn-color-red` / `.btn-outline-color-red` — for explicit brand-surface buttons
+
+### Palette button classes (`.btn-color-*` / `.btn-outline-color-*`)
+
+Available hues: `red`, `blue`, `green`, `yellow`, `orange`, `purple`, `turquoise`, `grey-light`, `grey-dark`, `neutral`.
+
+**Use only for user-picked accents** (favourites, personal colour preferences). Never use them to convey UI semantics — `.btn-danger`, `.btn-outline-success`, etc. exist for that.
+
+### Anti-generic-AI-look rules
 
 - No default Bootstrap blue everywhere — use the project accent.
-- The shared `theme.css` sets `--color-primary` to the Jardyx CI red `#e2001a` (dark-mode variant `#ff3347` for contrast). Projects may override in `project-theme.css`, but this is the default — never fall back to Bootstrap blue.
 - No unjustified gradients, no purple-to-pink hero sections.
 - Spacing rhythm comes from design tokens, not random rem values.
 - One accent color per app, not three.
@@ -89,7 +115,7 @@ The shared `.btn` is intentionally a neutral outlined button (transparent backgr
 
 ## 11. Shared assets (central repository)
 
-- `~/Git/css/icons/` is the central asset repository, symlinked into project `web/` directories alongside `shared/`.
+- `~/Git/css_library/icons/` is the central asset repository, symlinked into project `web/` directories alongside `shared/`.
 - `jardyx.svg` — canonical Jardyx logo. Use this file, don't re-export per project.
 - Include the full favicon set in every project's HTML head and PWA manifest:
   - `favicon.ico`
@@ -273,7 +299,7 @@ All admin mutations (create / edit / delete / password reset / 2FA revoke / disa
 
 - **Create** and **Edit** are always `.modal` dialogs, never inline forms or separate pages.
 - Trigger attributes: `data-modal-open="editModal"` on the button. Close via `data-modal-close`, backdrop click, or Escape.
-- Modal markup uses shared `.modal` / `.modal-dialog` / `.modal-content` / `.modal-header` / `.modal-body` / `.modal-footer` classes from `~/Git/css/components.css`.
+- Modal markup uses shared `.modal` / `.modal-dialog` / `.modal-content` / `.modal-header` / `.modal-body` / `.modal-footer` classes from `~/Git/css_library/components.css`.
 - Edit buttons pre-populate the modal via `data-*` attributes read in the click handler — no per-row URLs.
 
 ### 15.3 Card layout with split header
@@ -290,7 +316,7 @@ All admin mutations (create / edit / delete / password reset / 2FA revoke / disa
 
 ### 15.5 Shared JS helpers (mandatory)
 
-Every admin page loads `~/Git/css/js/admin.js` (via the same symlinked `shared/` directory used for CSS). It exposes:
+Every admin page loads `~/Git/css_library/js/admin.js` (via the same symlinked `shared/` directory used for CSS). It exposes:
 
 ```js
 adminPost(action, params)   // POST form-data to api.php?action=…, returns parsed JSON
