@@ -889,6 +889,15 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   -webkit-mask-image: url('./icons/icon-close.svg');
           mask-image: url('./icons/icon-close.svg');
 }
+.ui-icon-hourglass {
+  -webkit-mask-image: url('./icons/icon-hourglass.svg');
+          mask-image: url('./icons/icon-hourglass.svg');
+}
+
+/* Semantic colour modifiers — recolour the mask via currentColor */
+.ui-icon.is-success { color: var(--color-success); }
+.ui-icon.is-danger  { color: var(--color-danger); }
+.ui-icon.is-warning { color: var(--color-warning); }
 
 /* ── Palette button family ───────────────────────────────────────────────────
    User-pickable accent buttons bound directly to --palette-* tokens.
