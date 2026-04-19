@@ -64,21 +64,21 @@ Consumer projects may add their own tokens (e.g. `--color-green`) in a `project-
 Each consumer project symlinks this directory into its web tree:
 
 ```
-wlmonitor/web/css/shared  -> ~/Git/css
-Energie/web/styles/shared -> ~/Git/css
-simplechat-2.1/web/css/shared -> ~/Git/css
+wlmonitor/web/css/shared  -> ~/Git/css_library
+Energie/web/styles/shared -> ~/Git/css_library
+simplechat-2.1/web/css/shared -> ~/Git/css_library
 ```
 
 The `icons/` and `fonts/` directories are symlinked separately alongside `shared/`:
 
 ```
-wlmonitor/web/css/icons -> ~/Git/css/icons
-wlmonitor/web/fonts/    -> ~/Git/css/fonts
+wlmonitor/web/css/icons -> ~/Git/css_library/icons
+wlmonitor/web/fonts/    -> ~/Git/css_library/fonts
 ```
 
 ## Deployment
 
-All consumer projects deploy with `rsync --copy-links`, which resolves symlinks into real files at the destination. Do not introduce files that depend on directory structure above `~/Git/css`.
+All consumer projects deploy with `rsync --copy-links`, which resolves symlinks into real files at the destination. Do not introduce files that depend on directory structure above `~/Git/css_library`.
 
 ## Theming mechanism
 

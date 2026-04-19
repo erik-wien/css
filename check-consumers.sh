@@ -3,7 +3,7 @@
 #
 # For every app directory under ~/Git that has a web/ root, verify:
 #   1. Every symlink under web/ resolves to a real target.
-#      (Catches the wlmonitor bug: `web/assets -> ~/Git/css/assets` pointing
+#      (Catches the wlmonitor bug: `web/assets -> ~/Git/css_library/assets` pointing
 #       at a non-existent path.)
 #   2. If any template under web/ or inc/ uses `.app-header`, at least one CSS
 #      file under web/ declares `body { ... padding-top: ... }`. Rule §12
