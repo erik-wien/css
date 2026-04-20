@@ -608,6 +608,10 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   border-radius: var(--radius-sm);
   min-width: 2rem;
 }
+.badge-success { background: var(--color-success); color: #fff; }
+.badge-danger  { background: var(--color-danger);  color: #fff; }
+.badge-info    { background: var(--color-info);     color: #fff; }
+.badge-warning { background: var(--color-warning);  color: var(--color-text); }
 
 /* ── Tables ─────────────────────────────────────────────────────────────────── */
 
@@ -1013,4 +1017,41 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   font-size: 0.85rem;
 }
 .login-links a { color: var(--color-muted); text-decoration: none; }
+
+/* ── Impersonation banner ──────────────────────────────────────────────── */
+.impersonation-banner {
+    position: fixed;
+    top: var(--app-header-height);
+    left: 0;
+    right: 0;
+    z-index: 998;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .4rem 1rem;
+    background: var(--color-warning, #e8bc4d);
+    color: #000;
+    font-size: .875rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+.btn-end-impersonation {
+    margin-left: auto;
+    padding: .2rem .75rem;
+    border: 1.5px solid #000;
+    border-radius: var(--radius-sm, 4px);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: .8125rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.btn-end-impersonation:hover {
+    background: rgba(0,0,0,.12);
+}
+.btn-end-impersonation:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
 .login-links a:hover { color: var(--color-primary); text-decoration: underline; }
