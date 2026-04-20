@@ -332,22 +332,40 @@ body > main { flex: 1; }
    Desktop uses .header-nav; on mobile those items are mirrored here so the
    user-dropdown acts as the single hamburger affordance. */
 
-@media (min-width: 768px) { .dropdown-nav-section { display: none; } }
-
-.dropdown-section-label {
-  display: block;
-  padding: 0.4rem 1rem 0.2rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-muted);
+@media (min-width: 768px) {
+  .user-dropdown .dropdown-nav-section,
+  .user-dropdown .dropdown-nav-section + .dropdown-divider { display: none; }
 }
 
-.dropdown-nav-section a.active,
-.dropdown-nav-section .active {
+.dropdown-nav-section {
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem 0;
+}
+
+.dropdown-section-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  padding: 0.35rem 0.75rem 0.25rem;
+}
+
+.dropdown-nav-section .dropdown-link-btn.active {
   color: var(--color-accent);
   font-weight: 600;
+}
+
+.dropdown-nav-section .dropdown-link-btn.active::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 1em;
+  background: var(--color-accent);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  border-radius: 2px;
 }
 
 /* Trigger buttons that show a chevron (drill-down, sub-menu) */
