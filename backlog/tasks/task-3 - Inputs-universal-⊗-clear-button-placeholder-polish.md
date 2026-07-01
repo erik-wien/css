@@ -4,7 +4,7 @@ title: 'Inputs: universal ⊗ clear button + placeholder polish'
 status: Done
 assignee: []
 created_date: '2026-04-18 10:26'
-updated_date: '2026-04-19 05:42'
+updated_date: '2026-07-01 20:17'
 labels: []
 dependencies: []
 priority: medium
@@ -137,3 +137,13 @@ After this task merges, file per-app tasks titled e.g. *"Forms audit: add placeh
 - [x] #8 Verified in every app (Energie, wlmonitor, zeiterfassung, simplechat, suche): existing populated text inputs show the ⊗; empty ones dont; clearing works and triggers any filter-on-input behaviour
 - [x] #9 Verified no regression on .input-group search bars or password change forms (data-no-clear / .input-group exclusion works)
 <!-- AC:END -->
+
+## Comments
+
+<!-- COMMENTS:BEGIN -->
+author: claude
+created: 2026-07-01 20:17
+---
+Fulfilled by the app-wide field-enhance.js (2026-07-01): every input[type=search] and [data-clearable] gets a clear-× that appears on content and wipes the field; loaded on every authenticated page via chrome Footer + on every login page. Shipped + deployed to akadbrain + world4you. (Bonus: the same script adds the password-reveal eye to all password fields.)
+---
+<!-- COMMENTS:END -->
