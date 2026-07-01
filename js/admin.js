@@ -21,7 +21,9 @@
     const box = document.getElementById(containerId || 'adminAlerts');
     if (!box) return;
     const div = document.createElement('div');
-    div.className = 'alert alert-' + (type || 'info');
+    /* Catalog alert classes (the legacy .alert tier was removed in P8). */
+    const t = type || 'info';
+    div.className = 'app-alert app-alert-' + t;
     div.setAttribute('role', 'alert');
     div.textContent = msg;
     box.appendChild(div);
@@ -57,6 +59,24 @@
 
   var _previouslyFocused = null;
 
+  /* Class-agnostic modal handling: supports BOTH the legacy modal (.modal,
+     hidden by default, shown by adding .show) and the catalog modal
+     (.app-modal-backdrop, display:flex by default, hidden via the [hidden]
+     attribute). They use opposite toggle mechanisms, so route through these
+     helpers rather than touching .show / [hidden] directly. */
+  var MODAL_SEL  = '.modal, .app-modal-backdrop';
+  var DIALOG_SEL = '.modal-dialog, .app-modal-dialog';
+
+  function isAppModal(m)  { return m.classList.contains('app-modal-backdrop'); }
+  function isModalOpen(m) { return isAppModal(m) ? !m.hasAttribute('hidden') : m.classList.contains('show'); }
+  function setModalOpen(m, open) {
+    if (isAppModal(m)) {
+      if (open) m.removeAttribute('hidden'); else m.setAttribute('hidden', '');
+    } else {
+      m.classList.toggle('show', open);
+    }
+  }
+
   function getFocusable(container) {
     return Array.from(container.querySelectorAll(
       'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), ' +
@@ -70,17 +90,17 @@
     var m = document.getElementById(id);
     if (!m) return;
     _previouslyFocused = document.activeElement;
-    m.classList.add('show');
+    setModalOpen(m, true);
     m.setAttribute('aria-hidden', 'false');
     var focusable = getFocusable(m);
-    var target = focusable.length ? focusable[0] : m.querySelector('.modal-dialog');
+    var target = focusable.length ? focusable[0] : m.querySelector(DIALOG_SEL);
     if (target) target.focus();
   }
 
   function closeModal(id) {
     var m = document.getElementById(id);
     if (!m) return;
-    m.classList.remove('show');
+    setModalOpen(m, false);
     m.setAttribute('aria-hidden', 'true');
     if (_previouslyFocused && typeof _previouslyFocused.focus === 'function') {
       _previouslyFocused.focus();
@@ -94,16 +114,16 @@
     });
     document.querySelectorAll('[data-modal-close]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var m = btn.closest('.modal');
+        var m = btn.closest(MODAL_SEL);
         if (m) closeModal(m.id);
       });
     });
-    document.querySelectorAll('.modal').forEach(function (m) {
+    document.querySelectorAll(MODAL_SEL).forEach(function (m) {
       m.addEventListener('click', function (e) {
         if (e.target === m) closeModal(m.id);
       });
       m.addEventListener('keydown', function (e) {
-        if (!m.classList.contains('show') || e.key !== 'Tab') return;
+        if (!isModalOpen(m) || e.key !== 'Tab') return;
         var focusable = getFocusable(m);
         if (!focusable.length) return;
         var first = focusable[0];
@@ -117,14 +137,21 @@
     });
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
-      document.querySelectorAll('.modal.show').forEach(function (m) { closeModal(m.id); });
+      document.querySelectorAll(MODAL_SEL).forEach(function (m) { if (isModalOpen(m)) closeModal(m.id); });
     });
   }
 
   /* ── Tabs ────────────────────────────────────────────────────────────────── */
 
+  /* Tabs: support both legacy (.tab-btn/.tab-panel) and catalog
+     (.app-tab/.app-tab-panel). Panels of either kind hide via the [hidden]
+     attribute (legacy .tab-panel[hidden] and catalog .app-tab-panel[hidden]
+     both resolve to display:none). */
+  var TABBTN_SEL   = '.tab-btn, .app-tab';
+  var TABPANEL_SEL = '.tab-panel, .app-tab-panel';
+
   function activateTab(name) {
-    const buttons = document.querySelectorAll('.tab-btn');
+    const buttons = document.querySelectorAll(TABBTN_SEL);
     if (!buttons.length) return;
 
     const valid = Array.from(buttons).map(function (b) { return b.dataset.tab; });
@@ -137,7 +164,7 @@
       btn.setAttribute('aria-selected', active ? 'true' : 'false');
     });
 
-    document.querySelectorAll('.tab-panel').forEach(function (p) {
+    document.querySelectorAll(TABPANEL_SEL).forEach(function (p) {
       const active = p.id === 'panel-' + name;
       p.classList.toggle('is-active', active);
       p.classList.toggle('hidden', !active);
@@ -150,7 +177,7 @@
   }
 
   function wireTabs() {
-    document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    document.querySelectorAll(TABBTN_SEL).forEach(function (btn) {
       btn.addEventListener('click', function () { activateTab(btn.dataset.tab); });
     });
     window.addEventListener('hashchange', function () {

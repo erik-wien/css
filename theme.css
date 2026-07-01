@@ -84,6 +84,25 @@
   --space-4: 1rem;
   --space-5: 1.5rem;
   --space-6: 2rem;
+
+  /* ── TÜV .app-* catalog token aliases (Phase P0) ─────────────────────────────
+     Defined once here: custom properties resolve lazily at use-time, so these
+     `var()`-aliases automatically pick up the per-theme --color-* overrides in
+     the [data-theme="dark"] / @media blocks below — no need to repeat them.
+     Surface hierarchy: --color-bg (page) → --color-section (content container)
+     → --color-card (form/surface element). --color-frame = page bg, delineated
+     by --color-frame-border. Catalog source: ~/TUEV/theme/docs/ui-framework. */
+  --color-section:      var(--color-surface);
+  --color-frame:        var(--color-bg);
+  --color-frame-border: var(--color-muted);
+  --color-backdrop:     rgba(0, 0, 0, 0.55);
+  --radius-md:          var(--radius);
+
+  /* Auslastungs-Ampel — theme-invariant (no dark-mode override by design). */
+  --status-blue:   #4286c4;
+  --status-green:  #2c7a3a;
+  --status-orange: #d18000;
+  --status-red:    #c8121a;
 }
 
 [data-theme="dark"] {

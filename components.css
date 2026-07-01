@@ -8,28 +8,6 @@
   outline-offset: 2px;
 }
 
-/* ── Header nav dropdown ─────────────────────────────────────────────────────── */
-
-.header-dropdown { position: relative; }
-
-.header-dropdown-trigger {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: inherit;
-  font: inherit;
-  padding: 0.25rem 0.5rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  border-radius: var(--radius);
-}
-.header-dropdown-trigger:hover { background: var(--color-surface-alt); }
-.header-dropdown-trigger:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
 .header-dropdown-panel {
   display: none;
   position: absolute;
@@ -99,17 +77,6 @@
   color: #fff;
   background-color: var(--color-secondary-hover);
   border-color: var(--color-secondary-hover);
-}
-
-.btn-success {
-  color: #fff;
-  background-color: var(--color-success);
-  border-color: var(--color-success);
-}
-.btn-success:hover {
-  color: #fff;
-  background-color: var(--color-success-hover);
-  border-color: var(--color-success-hover);
 }
 
 .btn-danger {
@@ -188,13 +155,6 @@
   border-color: var(--color-warning);
 }
 .btn-outline-warning:hover { background-color: var(--color-warning); color: #000; }
-
-.btn-outline-success {
-  color: var(--color-success);
-  background: transparent;
-  border-color: var(--color-success);
-}
-.btn-outline-success:hover { background-color: var(--color-success); color: #000; }
 
 .btn-outline-info {
   color: var(--color-info);
@@ -302,101 +262,14 @@
 .btn-close::before { content: "×"; }
 .btn-close:hover { opacity: 1; }
 
-/* ── Cards ──────────────────────────────────────────────────────────────────── */
-
-.card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.card-header {
-  padding: 0.75rem 1rem;
-  background-color: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-}
-
-.card-body {
-  padding: 1rem;
-  color: var(--color-text);
-}
-
-.card-footer {
-  padding: 0.75rem 1rem;
-  background-color: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-}
-
-.card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-
-/* Card header with title on the left and a trailing action button on the right.
-   Used by the admin screens (Rule §15.3) and anywhere a card needs a header CTA. */
-.card-header-split {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
+/* Legacy .card* removed in P8 — use .app-card / .app-card-header / -body / -footer
+   / -heading / -header-split (the surfaced-card catalog) or .frame for borderless
+   grouped content. */
 
 .shadow-sm { box-shadow: var(--shadow-sm); }
 
-/* ── Tabs ───────────────────────────────────────────────────────────────────── */
-/* Used by Rule §15 admin screens and anywhere a page needs tabbed sections.
-   Pair with the JS helper `activateTab(name)` from ~/Git/css_library/js/admin.js.     */
-
-.tab-bar {
-  display: flex;
-  gap: 0.5rem;
-  border-bottom: 1px solid var(--color-border);
-  margin-top: 1rem;
-  margin-bottom: 1.25rem;
-  flex-wrap: wrap;
-}
-
-.tab-btn {
-  appearance: none;
-  background: none;
-  border: 1px solid transparent;
-  border-bottom: none;
-  border-top-left-radius: var(--radius);
-  border-top-right-radius: var(--radius);
-  color: var(--color-muted);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.95rem;
-  line-height: 1.2;
-  padding: 0.6rem 1rem;
-  min-height: 2.75rem;
-  margin-bottom: -1px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.tab-btn:hover { color: var(--color-text); }
-.tab-btn:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-.tab-btn.is-active,
-.tab-btn.active {
-  color: var(--color-text);
-  background: var(--color-surface);
-  border-color: var(--color-border);
-}
-
-.tab-panel { display: none; }
-.tab-panel.is-active,
-.tab-panel:not(.hidden):not([hidden]) { display: block; }
-.tab-panel.hidden,
-.tab-panel[hidden] { display: none; }
+/* Legacy .tab-bar/.tab-btn/.tab-panel removed in P8 — use .app-tabs / .app-tab /
+   .app-tab-panel (JS helper activateTab() in js/admin.js drives both). */
 
 /* ── Forms ──────────────────────────────────────────────────────────────────── */
 
@@ -559,36 +432,9 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
 }
 
 /* ── Alerts ─────────────────────────────────────────────────────────────────── */
-
-.alert {
-  padding: 0.75rem 1rem;
-  border: 1px solid transparent;
-  border-radius: var(--radius);
-  margin-bottom: 1rem;
-  position: relative;
-}
-
-.alert-danger  { color: #58151c; background-color: #f8d7da; border-color: #f1aeb5; }
-.alert-success { color: #0a3622; background-color: #d1e7dd; border-color: #a3cfbb; }
-.alert-warning { color: #664d03; background-color: #fff3cd; border-color: #ffe69c; }
-.alert-info    { color: #055160; background-color: #cff4fc; border-color: #9eeaf9; }
-
-[data-theme="dark"] .alert-danger,
-[data-theme="dark"] .alert-success,
-[data-theme="dark"] .alert-warning,
-[data-theme="dark"] .alert-info {
-  color: var(--color-text);
-}
-[data-theme="dark"] .alert-danger  { background-color: #3d1515; border-color: #7a2020; }
-[data-theme="dark"] .alert-success { background-color: #0f2a1a; border-color: #1e5c35; }
-[data-theme="dark"] .alert-warning { background-color: #2a2000; border-color: #5c4700; }
-[data-theme="dark"] .alert-info    { background-color: #072030; border-color: #0d4a6e; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .alert-danger  { color: var(--color-text); background-color: #3d1515; border-color: #7a2020; }
-  :root:not([data-theme="light"]) .alert-success { color: var(--color-text); background-color: #0f2a1a; border-color: #1e5c35; }
-  :root:not([data-theme="light"]) .alert-warning { color: var(--color-text); background-color: #2a2000; border-color: #5c4700; }
-  :root:not([data-theme="light"]) .alert-info    { color: var(--color-text); background-color: #072030; border-color: #0d4a6e; }
-}
+/* Legacy .alert/.alert-* colour classes removed in P8 — use .app-alert /
+   .app-alert-{danger,success,warning,info}. The .alert-dismissible / .fade / .show
+   behaviour utilities below stay (generic, not a colour alias). */
 
 .alert-dismissible {
   padding-right: 3rem;
@@ -604,22 +450,8 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
 .fade:not(.show) { opacity: 0; }
 .show { opacity: 1; }
 
-/* ── Badge ──────────────────────────────────────────────────────────────────── */
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25em 0.5em;
-  font-size: 0.75em;
-  font-weight: 700;
-  border-radius: var(--radius-sm);
-  min-width: 2rem;
-}
-.badge-success { background: var(--color-success); color: #fff; }
-.badge-danger  { background: var(--color-danger);  color: #fff; }
-.badge-info    { background: var(--color-info);     color: #fff; }
-.badge-warning { background: var(--color-warning);  color: var(--color-text); }
+/* Legacy .badge/.badge-* removed in P8 — use .app-badge / .app-badge-{success,
+   danger,warning,info,outline}. */
 
 /* ── Tables ─────────────────────────────────────────────────────────────────── */
 
@@ -685,113 +517,13 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   border-color: var(--color-primary);
 }
 
-/* ── Dropdown ───────────────────────────────────────────────────────────────── */
+/* Legacy .dropdown/.dropdown-menu/.dropdown-item/.dropdown-divider removed in P8 —
+   use the .app-menu-surface / .app-menu-item catalog system below. (Chrome's own
+   header menu uses .header-dropdown / .dropdown-link-btn, defined separately.) */
 
-.dropdown { position: relative; }
-
-.dropdown-toggle::after {
-  display: none; /* we use icon instead */
-}
-
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: calc(100% + 4px);
-  min-width: 14rem;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  z-index: 200;
-  overflow: hidden;
-}
-.dropdown-menu.show { display: block; }
-.dropdown-menu-end { right: 0; left: auto; }
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.5rem 1rem;
-  color: var(--color-text);
-  text-decoration: none;
-  white-space: nowrap;
-  background: transparent;
-  border: none;
-  width: 100%;
-  cursor: pointer;
-  font-size: 0.9375rem;
-}
-.dropdown-item:hover {
-  background-color: var(--color-surface-alt);
-  text-decoration: none;
-}
-
-.dropdown-item-text {
-  display: block;
-  padding: 0.5rem 1rem;
-  color: var(--color-muted);
-  font-size: 0.875rem;
-}
-
-.dropdown-divider {
-  height: 0;
-  margin: 0.25rem 0;
-  overflow: hidden;
-  border-top: 1px solid var(--color-border);
-}
-
-/* ── Modal ──────────────────────────────────────────────────────────────────── */
-
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 1050;
-  overflow-y: auto;
-  background-color: rgba(0,0,0,.5);
-  padding: 1rem;
-  align-items: flex-start;
-  justify-content: center;
-}
-.modal.show {
-  display: flex;
-}
-
-.modal-dialog {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  width: 100%;
-  max-width: 500px;
-  margin-top: 3rem;
-  overflow: hidden;
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
-  border-bottom: 1px solid var(--color-border);
-}
-.modal-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin: 0;
-}
-.modal-body   { padding: 1rem; }
-.modal-alerts:empty { display: none; }
-.modal-alerts .alert { margin-bottom: 0.75rem; }
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  padding: 1rem;
-  border-top: 1px solid var(--color-border);
-}
+/* Legacy .modal/.modal-dialog/.modal-header/-title/-body/-alerts/-footer removed
+   in P8 — use the .app-modal-backdrop[hidden] catalog system below (openModal/
+   closeModal in js/admin.js drive it via the [hidden] attribute). */
 
 /* ── Spinner ────────────────────────────────────────────────────────────────── */
 
@@ -976,48 +708,150 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   vertical-align: middle;
 }
 
-/* ── Login page ─────────────────────────────────────────────────────────────── */
+/* ── Login page (shared, imago-derived) ─────────────────────────────────────── */
+/* Bare centred page (no chrome header), app logo tinted inside the card, uppercase
+   field labels, red CTA. Password-reveal eye + clear-× are auto-wired app-wide by
+   js/field-enhance.js — no per-field markup needed. */
 
+/* Bare login page: neutralise the app.css body padding (reserved for the fixed
+   header/footer that the login page doesn't render) so the card stays centred. */
+body.login-page { padding: 0; min-height: 100vh; }
+
+.login-main,
 .login-wrap {
   display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: flex-start;
-  min-height: calc(100vh - 60px);
-  padding: 2rem;
+  min-height: 100vh;
+  padding: 2rem 1rem;
 }
 
 .login-card {
+  width: min(380px, 100%);
   background: var(--color-card);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 2rem;
-  width: 100%;
-  max-width: 360px;
-  box-shadow: var(--shadow);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 12px 40px rgba(0,0,0,.18);
+  padding: 2.5rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.login-card[hidden] { display: none; }
+
+/* App logo — jardyx silhouette, tinted per app via --logo-color, centred in card. */
+.login-logo {
+  display: block;
+  width: 60px; height: 60px;
+  margin: 0 auto 0.4rem;
+  background-color: var(--logo-color, var(--color-accent));
+  -webkit-mask: url("../../jardyx-logo.svg") center / contain no-repeat;
+          mask: url("../../jardyx-logo.svg") center / contain no-repeat;
 }
 
+.login-card h1,
 .login-card h2 {
-  margin: 0 0 1.5rem;
+  margin: 0 0 0.6rem;
   text-align: center;
-  font-size: 1.1rem;
-  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: 0.02em;
 }
 
-.login-card .form-group { margin-bottom: 1rem; }
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
+.login-field > span {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+.login-field input,
+.login-card .form-group input {
+  width: 100%;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+.login-field input:focus,
+.login-field input:focus-visible,
+.login-card .form-group input:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
 
+.login-check { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--color-text); }
+.login-check input { margin: 0; }
+
+.login-note { margin: 0; font-size: 0.8rem; color: var(--color-muted); }
+
+.login-error {
+  margin: 0; padding: 0.6rem 0.8rem; border-radius: 8px;
+  background: color-mix(in srgb, var(--color-danger) 14%, transparent);
+  color: var(--color-danger); font-size: 0.85rem; text-align: center;
+}
+.login-error[hidden] { display: none; }
+
+.login-forgot { text-align: center; font-size: 0.85rem; }
+.login-forgot a { color: var(--color-muted); }
+
+/* Login submit — brand-accent CTA (deliberate exception to the grey safe-primary
+   rule: Erik's choice, matches imago). */
 .btn-login {
   width: 100%;
   padding: 0.7rem;
-  background: var(--color-primary);
-  color: #fff;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
   border: none;
-  border-radius: var(--radius);
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 0.5rem;
+  margin-top: 0.3rem;
 }
-.btn-login:hover { background: var(--color-primary-hover); }
+.btn-login:hover { opacity: 0.9; }
+
+/* ── Password-reveal eye + clear-× (auto-injected by js/field-enhance.js) ────── */
+.pw-wrap { position: relative; display: block; }
+.pw-wrap input { width: 100%; padding-right: 2.4rem; }
+.pw-reveal {
+  position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; padding: 0;
+  background: transparent; border: 0; color: var(--color-muted);
+  cursor: pointer; border-radius: var(--radius-sm);
+}
+.pw-reveal:hover { color: var(--color-text); }
+.pw-reveal:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+.pw-reveal .pw-icon { width: 18px; height: 18px; display: none; }
+.pw-reveal .pw-icon-show { display: block; }
+.pw-reveal.shown .pw-icon-show { display: none; }
+.pw-reveal.shown .pw-icon-hide { display: block; }
+
+.clear-wrap { position: relative; display: block; }
+.clear-wrap input { width: 100%; padding-right: 2.2rem; }
+.field-clear {
+  position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
+  display: none; align-items: center; justify-content: center;
+  width: 26px; height: 26px; padding: 0; line-height: 1;
+  background: transparent; border: 0; color: var(--color-muted);
+  cursor: pointer; border-radius: 50%;
+}
+.clear-wrap.has-content .field-clear { display: inline-flex; }
+.field-clear:hover { color: var(--color-text); background: var(--color-surface-alt); }
+.field-clear .clear-icon { width: 15px; height: 15px; }
 
 .login-links {
   margin-top: 1rem;
@@ -1063,3 +897,432 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
     outline-offset: 2px;
 }
 .login-links a:hover { color: var(--color-primary); text-decoration: underline; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TÜV .app-* COMPONENT CATALOG — Phase P0 alias layer
+   ───────────────────────────────────────────────────────────────────────────
+   Catalog-compatible component classes (~/TUEV/theme/docs/ui-framework/
+   catalog.md). Git skin: sans titles (no serif), Jardyx red accent. As of P8
+   (2026-07) this IS the component system — the legacy aliases (.modal*, .alert*
+   colours, .dropdown-menu/-item, .tab-*, .card*, .badge*, green .btn-success)
+   have been removed; all apps use these .app-* / .frame classes.
+   ═════════════════════════════════════════════════════════════════════════ */
+
+/* ── Icon button (shared by modal/menu/alert close) ─────────────────────────── */
+.icon-btn {
+  width: 32px; height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Modal ──────────────────────────────────────────────────────────────────── */
+.app-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1rem;
+  overflow-y: auto;
+  background: var(--color-backdrop);
+}
+/* [hidden] guard — display:flex would otherwise defeat the UA [hidden] rule. */
+.app-modal-backdrop[hidden] { display: none; }
+
+.app-modal-dialog {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  margin-top: 3rem;
+  background: var(--color-section);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+/* Size modifier — compact dialogs (forms, confirmations). Default is 900px. */
+.app-modal-sm { max-width: 500px; }
+
+/* Optional passthrough wrapper — apps that keep a <div class="app-modal-content">
+   between dialog and header/body stay layout-transparent (children become the
+   dialog's flex items). Catalog markup omits it; this makes it a no-op when present. */
+.app-modal-content { display: contents; }
+
+/* Catalog default: brand-red accent header. */
+.app-modal-header {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+.app-modal-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+.app-modal-title {
+  margin: 0;
+  font-family: var(--font-sans);   /* Git skin: sans (TÜV uses serif) */
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-on-accent);
+}
+.app-modal-close {
+  width: 2rem; height: 2rem;
+  color: currentColor;             /* fits both accent and neutral headers */
+}
+.app-modal-body {
+  padding: 1rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.app-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+/* Inline alert container inside a modal body (catalog counterpart of .modal-alerts). */
+.app-modal-alerts:empty { display: none; }
+.app-modal-alerts .app-alert,
+.app-modal-alerts .alert { margin-bottom: 0.75rem; }
+
+/* ── Menu / Dropdown surface ────────────────────────────────────────────────── */
+.app-menu-surface {
+  position: absolute;
+  z-index: 50;
+  min-width: 12rem;
+  max-height: 340px;
+  overflow-y: auto;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: 0.25rem;
+}
+.app-menu-surface[hidden] { display: none; }
+
+.app-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+.app-menu-item:hover,
+.app-menu-item.is-active,
+.app-menu-item[aria-selected="true"] {
+  background: var(--color-surface-alt);
+}
+.app-menu-item[aria-selected="true"] { font-weight: 600; }
+.app-menu-item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+.app-menu-label { flex: 1; }
+.app-menu-count {
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85em;
+}
+.app-menu-sep {
+  height: 0;
+  margin: 0.25rem 0;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ── Alerts ─────────────────────────────────────────────────────────────────── */
+.app-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+.app-alert-icon { flex-shrink: 0; font-size: 1.1rem; line-height: 1.4; }
+.app-alert-body { flex: 1; }
+.app-alert-close { margin: -0.25rem -0.25rem -0.25rem 0; }
+
+.app-alert-danger  { color: #58151c; background: #f8d7da; border-color: #f1aeb5; }
+.app-alert-success { color: #0a3622; background: #d1e7dd; border-color: #a3cfbb; }
+.app-alert-warning { color: #664d03; background: #fff3cd; border-color: #ffe69c; }
+.app-alert-info    { color: #055160; background: #cff4fc; border-color: #9eeaf9; }
+
+[data-theme="dark"] .app-alert-danger  { color: var(--color-text); background: #3d1515; border-color: #7a2020; }
+[data-theme="dark"] .app-alert-success { color: var(--color-text); background: #0f2a1a; border-color: #1e5c35; }
+[data-theme="dark"] .app-alert-warning { color: var(--color-text); background: #2a2000; border-color: #5c4700; }
+[data-theme="dark"] .app-alert-info    { color: var(--color-text); background: #072030; border-color: #0d4a6e; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .app-alert-danger  { color: var(--color-text); background: #3d1515; border-color: #7a2020; }
+  :root:not([data-theme="light"]) .app-alert-success { color: var(--color-text); background: #0f2a1a; border-color: #1e5c35; }
+  :root:not([data-theme="light"]) .app-alert-warning { color: var(--color-text); background: #2a2000; border-color: #5c4700; }
+  :root:not([data-theme="light"]) .app-alert-info    { color: var(--color-text); background: #072030; border-color: #0d4a6e; }
+}
+
+/* ── Badges ─────────────────────────────────────────────────────────────────── */
+.app-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15em 0.6em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 999px;
+  background: var(--color-surface-alt);
+  color: var(--color-muted);
+  border: 1px solid transparent;
+}
+.app-badge-success { background: color-mix(in srgb, var(--color-success) 18%, transparent); color: var(--color-success); }
+.app-badge-warning { background: color-mix(in srgb, var(--color-warning) 22%, transparent); color: var(--color-warning); }
+.app-badge-danger  { background: color-mix(in srgb, var(--color-danger)  16%, transparent); color: var(--color-danger); }
+.app-badge-info    { background: color-mix(in srgb, var(--color-info)    18%, transparent); color: var(--color-info); }
+/* Outline axis — combinable with any tone. */
+.app-badge-outline { background: transparent; border-color: currentColor; }
+
+/* ── Tabs ───────────────────────────────────────────────────────────────────── */
+.app-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-4);
+}
+/* Sub-tab rows sit directly under a main tab row — no extra gap there. */
+.app-tabs.app-tabs-sub { margin-bottom: var(--space-3); }
+.app-tab {
+  appearance: none;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: -1px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.app-tab:hover { color: var(--color-text); }
+.app-tab.active,
+.app-tab[aria-selected="true"] {
+  color: var(--color-text);
+  border-bottom-color: var(--color-accent);
+}
+.app-tab:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.app-tab-count { font-size: 0.75rem; color: var(--color-muted); }
+.app-tab.active .app-tab-count,
+.app-tab[aria-selected="true"] .app-tab-count { color: var(--color-accent); }
+.app-tabs-sub .app-tab { font-size: 0.8rem; padding: 0.5rem 0.9rem; }
+.app-tab-panel { display: block; }
+.app-tab-panel[hidden] { display: none; }
+
+/* ── Frame / Card ───────────────────────────────────────────────────────────── */
+.frame {
+  background: var(--color-frame);
+  border: 1px solid var(--color-frame-border);
+  border-radius: var(--radius-sm);
+}
+.frame:focus-within { border-color: var(--color-accent); }
+.frame-accent { border-color: var(--color-accent); }
+.app-card-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--color-muted);
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+/* ── Card (catalog extension, decided 2026-06-30) ────────────────────────────
+   The TÜV catalog originally offered only .frame; Git apps use a card with a
+   header/body sub-structure pervasively (and .app-card-header-split for the
+   admin header-CTA, Rule §15). Added as canonical catalog members — now binding
+   for TÜV apps too. .frame stays for borderless grouped content; .app-card is
+   the surfaced card with optional header/body/footer. NOTE: .app-card-title
+   (above) is the small uppercase section label; .app-card-heading is the card's
+   prominent title (Git's former .card-title). */
+.app-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.app-card-header {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 500;
+}
+.app-card-header-split {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.app-card-body { padding: 1rem; color: var(--color-text); }
+.app-card-footer {
+  padding: 0.75rem 1rem;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+.app-card-heading { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; }
+
+/* ── Key-Value list ─────────────────────────────────────────────────────────── */
+.app-kv {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+.app-kv dt { color: var(--color-muted); }
+.app-kv dd { margin: 0; }
+@media (max-width: 480px) {
+  .app-kv { grid-template-columns: 1fr; gap: 0.25rem; }
+  .app-kv dd { margin-bottom: 0.5rem; }
+}
+
+/* ── Spinner ────────────────────────────────────────────────────────────────── */
+@keyframes app-spin { to { transform: rotate(360deg); } }
+.app-spinner {
+  display: inline-block;
+  width: 1rem; height: 1rem;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: app-spin 0.9s linear infinite;
+  vertical-align: -0.15em;
+  flex-shrink: 0;
+}
+.app-spinner-sm { width: 0.875rem; height: 0.875rem; }
+.app-spinner-lg { width: 1.5rem;  height: 1.5rem; border-width: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .app-spinner { animation: none; border-top-color: var(--color-accent); }
+}
+
+/* ── Tooltip / Help point ───────────────────────────────────────────────────── */
+.app-help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15em; height: 1.15em;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--color-muted);
+  cursor: help;
+}
+.app-help:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.app-tooltip {
+  position: absolute;
+  z-index: 2000;
+  max-width: 240px;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-card);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+.app-tooltip.is-open { display: block; }   /* sanctioned [hidden] override (catalog) */
+.app-tooltip-caret {
+  position: absolute;
+  width: 0; height: 0;
+  border: 6px solid transparent;
+  border-top-color: var(--color-border);
+}
+.app-tooltip.is-below .app-tooltip-caret { border-top-color: transparent; border-bottom-color: var(--color-border); }
+
+/* ── Table ──────────────────────────────────────────────────────────────────── */
+.app-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+.app-table thead th {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: 700;
+  text-align: left;
+}
+.app-table th, .app-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.app-table-head-discreet thead th {
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  font-weight: 500;
+}
+.app-table-zebra tbody tr:nth-child(even) > * { background: var(--color-surface-alt); }
+.app-table-hover tbody tr:hover > * { background: color-mix(in srgb, var(--color-text) 5%, transparent); }
+.app-table-blue  thead th { background: var(--color-info); }
+.app-table-green thead th { background: var(--color-success); }
+
+/* ── Pagination ─────────────────────────────────────────────────────────────── */
+.app-pagination { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.app-page-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.2rem;
+  background: var(--color-border);
+  border-radius: 999px;
+}
+.app-page-btn {
+  min-width: 1.9rem; height: 1.7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  color: var(--color-muted);
+  cursor: pointer;
+  font: inherit;
+}
+.app-page-btn:hover { color: var(--color-text); }
+.app-page-btn.active {
+  background: var(--color-card);
+  color: var(--color-text);
+  font-weight: 600;
+}
+.app-page-btn[disabled] { opacity: 0.35; pointer-events: none; }
+.app-page-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.app-page-ellipsis { user-select: none; color: var(--color-muted); padding: 0 0.25rem; }
+.app-page-count { margin-left: auto; color: var(--color-muted); font-size: 0.85rem; }
+
+/* ── Status ampel (utilisation) ─────────────────────────────────────────────── */
+.status-blue   { color: var(--status-blue); }
+.status-green  { color: var(--status-green); }
+.status-orange { color: var(--status-orange); }
+.status-red    { color: var(--status-red); }
+
+/* Green/constructive button tier removed in P8 (reconciliation.md §1) — red is the
+   only emphasis colour. --color-success and the STATUS tones (.app-badge-success /
+   .app-alert-success) stay green: success status ≠ a button tier. */

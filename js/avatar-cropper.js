@@ -31,13 +31,13 @@
     let objectUrl = null;
 
     function openModal() {
-      modal.classList.add('show');
+      modal.hidden = false;
       modal.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
-      modal.classList.remove('show');
+      modal.hidden = true;
       modal.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
       if (cropper) { cropper.destroy(); cropper = null; }
@@ -80,7 +80,7 @@
       if (e.target === modal) closeModal();
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
+      if (e.key === 'Escape' && !modal.hidden) closeModal();
     });
 
     confirm.addEventListener('click', function () {
