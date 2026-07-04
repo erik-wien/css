@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design Guide — css_library</title>
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="reset.css">
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="components.css">
+  <style>
+    body {
+      padding: var(--space-5);
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-text);
+    }
+
+    .dg-header {
+      margin-bottom: var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-4);
+    }
+    .dg-header h1 {
+      margin: 0 0 var(--space-2);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .dg-header p {
+      margin: 0;
+      color: var(--color-muted);
+      font-size: 0.9rem;
+      max-width: 65ch;
+    }
+
+    .dg-section {
+      margin-bottom: var(--space-6);
+    }
+    .dg-section > h2 {
+      font-size: 1.1rem;
+      margin: 0 0 var(--space-3);
+    }
+    .dg-section > p {
+      margin: 0 0 var(--space-4);
+      color: var(--color-muted);
+      font-size: 0.875rem;
+      max-width: 75ch;
+      line-height: 1.6;
+    }
+    .dg-section code {
+      font-family: var(--font-mono);
+      font-size: 0.82em;
+      background: var(--color-surface-alt);
+      padding: 0.1em 0.35em;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Side-by-side light / dark panels — each isolated via data-theme */
+    .dg-panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+    @media (max-width: 640px) {
+      .dg-panels { grid-template-columns: 1fr; }
+    }
+    .dg-panel {
+      position: relative;
+      padding: var(--space-4);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-bg);
+      color: var(--color-text);
+    }
+    .dg-panel-label {
+      position: absolute;
+      top: 0.4rem;
+      right: 0.6rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+    }
+
+    /* Icon grid inside each panel */
+    .dg-icongrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+      gap: 0.4rem;
+    }
+    .dg-icontile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.6rem 0.3rem;
+      text-align: center;
+    }
+    .dg-icontile .ui-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: var(--color-text);
+    }
+    .dg-iconname {
+      font-size: 0.62rem;
+      color: var(--color-muted);
+      font-family: var(--font-mono);
+      word-break: break-word;
+    }
+    .dg-empty {
+      font-size: 0.85rem;
+      color: var(--color-muted);
+      padding: var(--space-2) 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dg-header">
+  <h1>Design Guide &mdash; css_library</h1>
+  <p>
+    Lebende Referenz der geteilten Komponenten. Diese Seite ist unter
+    <code>web/css/shared/designguide.html</code> in jeder Consumer-App erreichbar
+    (z.&thinsp;B. <code>http://zeit.test/css/shared/designguide.html</code>).
+  </p>
+</div>
+
+<main id="main-content">
+
+  <section class="dg-section" aria-labelledby="dg-icons">
+    <h2 id="dg-icons">Icon-Bibliothek</h2>
+    <p>
+      Alle monochromen Icons laufen &uuml;ber die <code>.ui-icon</code>-Maske
+      (<code>background-color:&nbsp;currentColor</code>, SVG als <code>mask-image</code>)
+      und erben die Textfarbe &mdash; sie sind dadurch theme-fest ohne zus&auml;tzliche
+      Dark-Mode-Regeln. Nutzung:
+      <code>&lt;span class="ui-icon ui-icon-NAME" aria-hidden="true"&gt;&lt;/span&gt;</code>
+      (mit <code>aria-label</code> statt <code>aria-hidden</code> f&uuml;r semantisch bedeutsame Icons).
+    </p>
+    <p>
+      Neue Icons: SVG-Datei als <code>icon-NAME.svg</code> in <code>css_library/icons/</code>
+      ablegen (monochrom, single-path/opak, <code>fill="currentColor"</code>),
+      dann Klasse <code>.ui-icon-NAME { mask-image: url('./icons/icon-NAME.svg'); }</code>
+      zentral in <code>components.css</code> registrieren. Bevorzugter Provider: Lucide.
+      Mehrfarbige Marken-Logos (jardyx.svg usw.) bleiben bewusst <code>&lt;img&gt;</code>.
+    </p>
+    <p>
+      Die Kacheln unten werden per Inline-Script automatisch aus <code>components.css</code>
+      generiert und bleiben ohne Pflegeaufwand aktuell.
+    </p>
+    <div class="dg-panels">
+      <div class="dg-panel" data-theme="light">
+        <span class="dg-panel-label">Hell</span>
+        <div class="dg-icongrid" id="icon-grid-light"><span class="dg-empty">Lade&hellip;</span></div>
+      </div>
+      <div class="dg-panel" data-theme="dark">
+        <span class="dg-panel-label">Dunkel</span>
+        <div class="dg-icongrid" id="icon-grid-dark"><span class="dg-empty">Lade&hellip;</span></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  function renderGrid(icons, containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    if (!icons.length) {
+      container.innerHTML = '<span class="dg-empty">Keine Icons gefunden.</span>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < icons.length; i++) {
+      var name = icons[i];
+      html +=
+        '<div class="dg-icontile">' +
+          '<span class="ui-icon ui-icon-' + name + '" aria-hidden="true"></span>' +
+          '<span class="dg-iconname">ui-icon-' + name + '</span>' +
+        '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  fetch('components.css')
+    .then(function (r) { return r.text(); })
+    .then(function (css) {
+      var re = /\.ui-icon-([a-z0-9-]+)\s*\{[^}]*mask-image/g;
+      var seen = {};
+      var icons = [];
+      var m;
+      while ((m = re.exec(css)) !== null) {
+        if (!seen[m[1]]) {
+          seen[m[1]] = true;
+          icons.push(m[1]);
+        }
+      }
+      icons.sort();
+      renderGrid(icons, 'icon-grid-light');
+      renderGrid(icons, 'icon-grid-dark');
+    })
+    .catch(function () {
+      var msg = '<span class="dg-empty">Konnte components.css nicht laden (Datei-URL?). Seite &uuml;ber einen lokalen Webserver &ouml;ffnen.</span>';
+      document.getElementById('icon-grid-light').innerHTML = msg;
+      document.getElementById('icon-grid-dark').innerHTML = msg;
+    });
+}());
+</script>
+
+</body>
+</html>
