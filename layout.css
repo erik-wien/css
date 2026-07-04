@@ -540,7 +540,7 @@ body > main { flex: 1; }
 
 .app-footer {
   display: flex;
-  justify-content: center;
+  justify-content: space-between; /* Impressum links · © mitte · Version rechts */
   align-items: center;
   gap: 1.25rem;
   padding: 0.4rem 1.5rem;
