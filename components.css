@@ -645,6 +645,30 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   -webkit-mask-image: url('./icons/icon-hourglass.svg');
           mask-image: url('./icons/icon-hourglass.svg');
 }
+.ui-icon-download {
+  -webkit-mask-image: url('./icons/icon-download.svg');
+          mask-image: url('./icons/icon-download.svg');
+}
+.ui-icon-grid {
+  -webkit-mask-image: url('./icons/icon-grid.svg');
+          mask-image: url('./icons/icon-grid.svg');
+}
+.ui-icon-table {
+  -webkit-mask-image: url('./icons/icon-table.svg');
+          mask-image: url('./icons/icon-table.svg');
+}
+.ui-icon-ellipsis {
+  -webkit-mask-image: url('./icons/icon-ellipsis.svg');
+          mask-image: url('./icons/icon-ellipsis.svg');
+}
+.ui-icon-reset {
+  -webkit-mask-image: url('./icons/icon-reset.svg');
+          mask-image: url('./icons/icon-reset.svg');
+}
+.ui-icon-tag {
+  -webkit-mask-image: url('./icons/icon-tag.svg');
+          mask-image: url('./icons/icon-tag.svg');
+}
 
 /* Semantic colour modifiers — recolour the mask via currentColor */
 .ui-icon.is-success { color: var(--color-success); }
