@@ -673,6 +673,19 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   -webkit-mask-image: url('./icons/icon-merge.svg');
           mask-image: url('./icons/icon-merge.svg');
 }
+/* Theme switcher: light / auto / dark (canonical — replaces ☀ ⬤ 🌙 emojis) */
+.ui-icon-sun {
+  -webkit-mask-image: url('./icons/icon-sun.svg');
+          mask-image: url('./icons/icon-sun.svg');
+}
+.ui-icon-moon {
+  -webkit-mask-image: url('./icons/icon-moon.svg');
+          mask-image: url('./icons/icon-moon.svg');
+}
+.ui-icon-monitor {
+  -webkit-mask-image: url('./icons/icon-monitor.svg');
+          mask-image: url('./icons/icon-monitor.svg');
+}
 
 /* Semantic colour modifiers — recolour the mask via currentColor */
 .ui-icon.is-success { color: var(--color-success); }
