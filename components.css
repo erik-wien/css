@@ -669,6 +669,10 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   -webkit-mask-image: url('./icons/icon-tag.svg');
           mask-image: url('./icons/icon-tag.svg');
 }
+.ui-icon-merge {
+  -webkit-mask-image: url('./icons/icon-merge.svg');
+          mask-image: url('./icons/icon-merge.svg');
+}
 
 /* Semantic colour modifiers — recolour the mask via currentColor */
 .ui-icon.is-success { color: var(--color-success); }
