@@ -695,6 +695,18 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   -webkit-mask-image: url('./icons/icon-bell-off.svg');
           mask-image: url('./icons/icon-bell-off.svg');
 }
+.ui-icon-lock {
+  -webkit-mask-image: url('./icons/icon-lock.svg');
+          mask-image: url('./icons/icon-lock.svg');
+}
+.ui-icon-send {
+  -webkit-mask-image: url('./icons/icon-send.svg');
+          mask-image: url('./icons/icon-send.svg');
+}
+.ui-icon-eye {
+  -webkit-mask-image: url('./icons/icon-eye.svg');
+          mask-image: url('./icons/icon-eye.svg');
+}
 
 /* Semantic colour modifiers — recolour the mask via currentColor */
 .ui-icon.is-success { color: var(--color-success); }
