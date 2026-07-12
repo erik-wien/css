@@ -250,7 +250,7 @@
        initLogTab({
          endpoint:    '<?= $base ?>/api.php',   // required
          csrfToken:   <?= json_encode($csrfToken) ?>, // required
-         perPage:     25,                       // optional, default 25
+         perPage:     50,                       // optional, default 50 (matches the server-side admin_log_list default)
          tabSelector: undefined,                // optional override
        });
 
@@ -282,7 +282,7 @@
     cfg = cfg || {};
     var endpoint    = cfg.endpoint;
     var csrfToken   = cfg.csrfToken;
-    var perPage     = cfg.perPage || 25;
+    var perPage     = cfg.perPage || 50;
     var tabSelector = cfg.tabSelector || '.app-tab[data-tab="log"], .tab-btn[data-tab="log"]';
 
     if (!endpoint || !csrfToken) {
