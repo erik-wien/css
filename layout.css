@@ -208,8 +208,8 @@ body > main { flex: 1; }
   width: 28px;
   height: 28px;
   background-color: var(--logo-color, var(--color-accent));
-  -webkit-mask: url("./icons/jardyx.svg") center / contain no-repeat;
-          mask: url("./icons/jardyx.svg") center / contain no-repeat;
+  -webkit-mask: url("./logos/jardyx.svg#m") center / contain no-repeat;
+          mask: url("./logos/jardyx.svg#m") center / contain no-repeat;
 }
 .header-appname { font-size: 1.1rem; font-weight: 600; color: var(--color-text); }
 
