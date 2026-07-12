@@ -4,6 +4,7 @@
 # Personal / agent workflow — not for publication
 CLAUDE.md
 .claude/
+.superpowers/
 docs/superpowers/
 update.md
 .env
