@@ -53,6 +53,10 @@
   white-space: nowrap;
   user-select: none;
 }
+/* [hidden]-Guard (ui-design-rules §8): display:inline-flex schlägt sonst die
+   UA-Regel [hidden]{display:none} → ein per JS (btn.hidden=true) versteckter
+   Button bliebe sichtbar. Global, weil jede App das gleiche latente Problem hat. */
+.btn[hidden] { display: none; }
 .btn:hover { text-decoration: none; background-color: var(--color-surface-alt); }
 .btn:disabled, .btn[disabled] { opacity: 0.65; pointer-events: none; }
 .btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
