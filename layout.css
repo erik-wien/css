@@ -197,16 +197,19 @@ body > main { flex: 1; }
 .brand:hover { text-decoration: none; color: var(--color-text); }
 
 /* Brand logo: CSS-mask silhouette recoloured per app via --logo-color
-   (fallback = brand accent). The mask path is relative to this stylesheet's
-   served URL (/css/shared/) → each app's own web-root jardyx-logo.svg. */
+   (fallback = brand accent). Single source of truth: the canonical jardyx
+   silhouette in this shared library (/css/shared/icons/jardyx.svg) — no
+   per-app web-root copy. The mask uses only the shape's alpha coverage, so
+   the file's own fill colour is irrelevant; the visible colour is always the
+   app's --logo-color / --color-accent. */
 .header-logo {
   display: block;
   flex-shrink: 0;
   width: 28px;
   height: 28px;
   background-color: var(--logo-color, var(--color-accent));
-  -webkit-mask: url("../../jardyx-logo.svg") center / contain no-repeat;
-          mask: url("../../jardyx-logo.svg") center / contain no-repeat;
+  -webkit-mask: url("./icons/jardyx.svg") center / contain no-repeat;
+          mask: url("./icons/jardyx.svg") center / contain no-repeat;
 }
 .header-appname { font-size: 1.1rem; font-weight: 600; color: var(--color-text); }
 
