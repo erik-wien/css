@@ -240,6 +240,243 @@
     }
   }
 
+  /* ── Log tab: AJAX load, filter, paginate ───────────────────────────────── */
+
+  /* Shared "Log" admin tab (erikr/chrome §15.1), generalised from the
+     bug-fixed biblio reference (~/Git/biblio/web/admin.php). Apps call this
+     explicitly — it is NOT wired by init() — because it needs a per-app
+     endpoint + CSRF token:
+
+       initLogTab({
+         endpoint:    '<?= $base ?>/api.php',   // required
+         csrfToken:   <?= json_encode($csrfToken) ?>, // required
+         perPage:     25,                       // optional, default 25
+         tabSelector: undefined,                // optional override
+       });
+
+     Operates on the same markup/IDs as biblio's inline block: #logFilterForm,
+     #logTbody, #logPagination, #logTotal, #log_app, #log_context, #log_user,
+     #log_from, #log_to, #log_q, #log_fail, #logReset. Does not invent new
+     markup — apps must already render this (erikr/chrome LogTab partial). */
+
+  async function postLog(endpoint, csrfToken, action, params) {
+    const fd = new FormData();
+    fd.append('csrf_token', csrfToken || '');
+    if (params && typeof params === 'object') {
+      for (const k of Object.keys(params)) {
+        const v = params[k];
+        if (v !== undefined && v !== null) fd.append(k, v);
+      }
+    }
+    const sep = endpoint.indexOf('?') === -1 ? '?' : '&';
+    const url = endpoint + sep + 'action=' + encodeURIComponent(action);
+    const res = await fetch(url, { method: 'POST', body: fd });
+    try {
+      return await res.json();
+    } catch (_) {
+      return { ok: false, error: 'Ungültige Serverantwort.' };
+    }
+  }
+
+  function initLogTab(cfg) {
+    cfg = cfg || {};
+    var endpoint    = cfg.endpoint;
+    var csrfToken   = cfg.csrfToken;
+    var perPage     = cfg.perPage || 25;
+    var tabSelector = cfg.tabSelector || '.app-tab[data-tab="log"], .tab-btn[data-tab="log"]';
+
+    if (!endpoint || !csrfToken) {
+      console.error('initLogTab: cfg.endpoint and cfg.csrfToken are required.');
+      return;
+    }
+
+    function run() {
+      const form      = document.getElementById('logFilterForm');
+      const tbody     = document.getElementById('logTbody');
+      const paginate  = document.getElementById('logPagination');
+      const totalEl   = document.getElementById('logTotal');
+      const appSel    = document.getElementById('log_app');
+      const ctxSel    = document.getElementById('log_context');
+      const fromInput = document.getElementById('log_from');
+      const toInput   = document.getElementById('log_to');
+      const resetBtn  = document.getElementById('logReset');
+      if (!form) return;
+
+      let filtersInitialised = false;
+      let loaded             = false;
+
+      const today   = new Date();
+      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const ymd = d => d.toISOString().slice(0, 10);
+
+      fromInput.value = ymd(weekAgo);
+      toInput.value   = ymd(today);
+
+      if (window.flatpickr) {
+        flatpickr(fromInput, { dateFormat: 'Y-m-d' });
+        flatpickr(toInput,   { dateFormat: 'Y-m-d' });
+      }
+
+      function addOption(sel, value) {
+        const opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = value;
+        sel.appendChild(opt);
+      }
+
+      function populateFilters(apps, contexts) {
+        if (filtersInitialised) return;
+        filtersInitialised = true;
+        (apps     || []).forEach(a => addOption(appSel, a));
+        (contexts || []).forEach(c => addOption(ctxSel, c));
+      }
+
+      function currentFilters() {
+        return {
+          app:     appSel.value,
+          context: ctxSel.value,
+          user:    document.getElementById('log_user').value.trim(),
+          from:    fromInput.value.trim(),
+          to:      toInput.value.trim(),
+          q:       document.getElementById('log_q').value.trim(),
+          fail:    document.getElementById('log_fail').checked ? '1' : '',
+        };
+      }
+
+      function setPlaceholderRow(text) {
+        tbody.replaceChildren();
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 6;
+        td.className = 'text-muted';
+        td.textContent = text;
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      }
+
+      function renderRows(rows) {
+        tbody.replaceChildren();
+        if (!rows.length) {
+          setPlaceholderRow('Keine Einträge gefunden.');
+          return;
+        }
+        for (const r of rows) {
+          const tr = document.createElement('tr');
+
+          const tdTime = document.createElement('td');
+          tdTime.className = 'log-time';
+          tdTime.textContent = r.logTime ?? '';
+          tr.appendChild(tdTime);
+
+          const tdOrigin = document.createElement('td');
+          tdOrigin.textContent = r.origin ?? '';
+          tr.appendChild(tdOrigin);
+
+          const tdCtx = document.createElement('td');
+          tdCtx.textContent = r.context ?? '';
+          tr.appendChild(tdCtx);
+
+          const tdUser = document.createElement('td');
+          if (r.username !== null && r.username !== undefined) {
+            tdUser.textContent = r.username;
+          } else {
+            const sp = document.createElement('span');
+            sp.className = 'text-muted';
+            sp.textContent = '—';
+            tdUser.appendChild(sp);
+          }
+          tr.appendChild(tdUser);
+
+          const tdIp = document.createElement('td');
+          if (r.ip !== null && r.ip !== undefined) {
+            tdIp.textContent = r.ip;
+          } else {
+            const sp = document.createElement('span');
+            sp.className = 'text-muted';
+            sp.textContent = '—';
+            tdIp.appendChild(sp);
+          }
+          tr.appendChild(tdIp);
+
+          const tdAct = document.createElement('td');
+          tdAct.className = 'log-activity';
+          tdAct.textContent = r.activity ?? '';
+          tr.appendChild(tdAct);
+
+          tbody.appendChild(tr);
+        }
+      }
+
+      function renderPagination(page, total, perPageResp, onClick) {
+        paginate.replaceChildren();
+        const lastPage = Math.max(1, Math.ceil(total / perPageResp));
+        if (lastPage <= 1) return;
+        for (let p = 1; p <= lastPage; p++) {
+          const a = document.createElement('a');
+          a.className = 'page-link' + (p === page ? ' active' : '');
+          a.href = '#log';
+          a.textContent = String(p);
+          a.addEventListener('click', e => { e.preventDefault(); onClick(p); });
+          paginate.appendChild(a);
+        }
+      }
+
+      async function loadPage(page) {
+        setPlaceholderRow('Lade…');
+        const res = await postLog(endpoint, csrfToken, 'admin_log_list', {
+          page,
+          per_page: perPage,
+          ...currentFilters(),
+        });
+        if (!res.ok) {
+          setPlaceholderRow('Fehler beim Laden.');
+          showAlert(res.error || 'Log konnte nicht geladen werden.', 'danger');
+          return;
+        }
+        populateFilters(res.apps, res.contexts);
+        totalEl.textContent = String(res.total);
+        renderRows(res.rows || []);
+        renderPagination(res.page, res.total, res.per_page || perPage, loadPage);
+      }
+
+      form.addEventListener('submit', e => { e.preventDefault(); loadPage(1); });
+
+      resetBtn.addEventListener('click', e => {
+        e.preventDefault();
+        appSel.value = '';
+        ctxSel.value = '';
+        document.getElementById('log_user').value   = '';
+        document.getElementById('log_q').value      = '';
+        document.getElementById('log_fail').checked = false;
+        fromInput.value = ymd(weekAgo);
+        toInput.value   = ymd(today);
+        loadPage(1);
+      });
+
+      function maybeLoad() {
+        if (loaded) return;
+        if (location.hash === '#log') {
+          loaded = true;
+          loadPage(1);
+        }
+      }
+      // Katalog-Markup nutzt .app-tab (nicht das Legacy .tab-btn); der Log-Tab lud
+      // sonst auf Klick nie, weil activateTab per replaceState kein hashchange feuert
+      // (Audit 2026-07-12, TASK-15). Beide Klassen abdecken für Alt-Markup-Sicherheit.
+      document.querySelectorAll(tabSelector).forEach(btn =>
+        btn.addEventListener('click', () => { if (!loaded) { loaded = true; loadPage(1); } })
+      );
+      window.addEventListener('hashchange', maybeLoad);
+      maybeLoad();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', run);
+    } else {
+      run();
+    }
+  }
+
   /* ── Bootstrap ───────────────────────────────────────────────────────────── */
 
   function init() {
@@ -260,4 +497,5 @@
   window.openModal   = openModal;
   window.closeModal  = closeModal;
   window.activateTab = activateTab;
+  window.initLogTab  = initLogTab;
 })();
