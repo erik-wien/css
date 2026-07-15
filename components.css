@@ -694,6 +694,14 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   -webkit-mask-image: url('./icons/icon-map-pin.svg');
           mask-image: url('./icons/icon-map-pin.svg');
 }
+.ui-icon-chevron-left {
+  -webkit-mask-image: url('./icons/icon-chevron-left.svg');
+          mask-image: url('./icons/icon-chevron-left.svg');
+}
+.ui-icon-chevron-right {
+  -webkit-mask-image: url('./icons/icon-chevron-right.svg');
+          mask-image: url('./icons/icon-chevron-right.svg');
+}
 /* Theme switcher: light / auto / dark (canonical — replaces ☀ ⬤ 🌙 emojis) */
 .ui-icon-sun {
   -webkit-mask-image: url('./icons/icon-sun.svg');
