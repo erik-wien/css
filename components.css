@@ -690,6 +690,10 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   -webkit-mask-image: url('./icons/icon-group.svg');
           mask-image: url('./icons/icon-group.svg');
 }
+.ui-icon-map-pin {
+  -webkit-mask-image: url('./icons/icon-map-pin.svg');
+          mask-image: url('./icons/icon-map-pin.svg');
+}
 /* Theme switcher: light / auto / dark (canonical — replaces ☀ ⬤ 🌙 emojis) */
 .ui-icon-sun {
   -webkit-mask-image: url('./icons/icon-sun.svg');
