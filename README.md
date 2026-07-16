@@ -112,3 +112,34 @@ body {
 **Footer** — use `.app-footer` with a per-app grid override: `display: grid; grid-template-columns: 1fr auto 1fr`. Columns: Impressum link | copyright | version string.
 
 See [`docs/design-rules.md`](docs/design-rules.md) §12–§14 for full markup requirements.
+
+## `js/api-call.js` — geteilte Fetch-Hülle
+
+Ersetzt bespoke `fetch().then(res => res.json())`-Callsites, die bei Fehlern die
+konkrete Servermeldung verwerfen (Robustheit-Audit 2026-07-16, §21 in
+`~/.claude/rules/ui-design-rules.md`). Schwester-File für TUEV-Apps:
+`~/TUEV/theme/js/api-call.js` (gleiche API, getrenntes Ökosystem).
+
+```js
+import { apiCall, apiForm, ApiError } from './shared/js/api-call.js';
+
+// vorher: Servermeldung geht verloren
+fetch('/api.php', { method: 'POST', body: fd })
+  .then((res) => res.json())
+  .then((data) => { if (!data.ok) zeigeFehler('Fehler'); })
+  .catch(() => zeigeFehler('Netzwerkfehler'));
+
+// nachher: konkrete, deutsche Fehlermeldung; Netzwerk-/Timeout-/Abbruch-
+// Fehler unterscheidbar über ApiError.kind
+try {
+  const data = await apiForm('/api.php', { aktion: 'speichern' });
+  zeigeErfolg(data);
+} catch (e) {
+  zeigeFehler(e.message); // z.B. "Serverfehler (HTTP 400) — Feed-URL muss mit https:// beginnen"
+}
+```
+
+`apiCall(url, { method, body, timeoutMs=30000, signal, headers })` parst den
+Body auch bei `!res.ok` und übernimmt `error`/`detail`-Felder in die
+`ApiError` (`kind: 'http' | 'network' | 'timeout' | 'abort' | 'badjson'`).
+Tests: `node --test tests/api-call.test.mjs`.
