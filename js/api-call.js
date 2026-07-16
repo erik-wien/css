@@ -30,7 +30,7 @@
 // ApiError zusätzlich an window gehängt (wie dialog.js es löst).
 
 export class ApiError extends Error {
-    constructor(message, { status = 0, detail = null, kind }) {
+    constructor(message, { status = 0, detail = null, kind } = {}) {
         super(message);
         this.name = 'ApiError';
         this.status = status;
@@ -48,20 +48,42 @@ function snippet(text) {
     return s.length > SNIPPET_MAX ? s.slice(0, SNIPPET_MAX) + '…' : s;
 }
 
-// Body lesen + versuchen als JSON zu parsen. Liefert { json, rawText } —
-// json ist null, wenn der Body leer oder nicht parsebar ist.
-async function leseKoerper(res) {
-    let rawText = '';
-    try {
-        rawText = await res.text();
-    } catch {
-        return { json: null, rawText: '' };
+// Detail für HTTP-Fehler aus dem Rohtext ableiten: parst der Body zu einem
+// JSON-Objekt, zählt NUR ein nicht-leerer .error/.detail-String (sonst null —
+// kein Klammer-Dump von z.B. "{}"); parst er nicht oder zu etwas anderem als
+// einem Objekt (Zahl, Array, literalem null, Nicht-JSON-Text), zählt ein
+// Snippet des Rohtexts.
+function extractDetail(rawText) {
+    let json;
+    let parsed = false;
+    if (rawText) {
+        try {
+            json = JSON.parse(rawText);
+            parsed = true;
+        } catch {
+            parsed = false;
+        }
     }
-    if (!rawText) return { json: null, rawText: '' };
+    const istObjekt = parsed && json !== null && typeof json === 'object' && !Array.isArray(json);
+    if (istObjekt) {
+        const err = typeof json.error === 'string' && json.error !== '' ? json.error : null;
+        const det = typeof json.detail === 'string' && json.detail !== '' ? json.detail : null;
+        return err ?? det ?? null;
+    }
+    return snippet(rawText);
+}
+
+// res.text() selbst gegen Exceptions absichern (Muster C1) — schlägt der Read
+// fehl, wirft dies direkt eine badjson-ApiError statt eine rohe Exception
+// durchzureichen.
+async function leseRohtext(res) {
     try {
-        return { json: JSON.parse(rawText), rawText };
+        return await res.text();
     } catch {
-        return { json: null, rawText };
+        throw new ApiError(
+            `Unerwartete Serverantwort (HTTP ${res.status}, kein gültiges JSON)`,
+            { status: res.status, detail: null, kind: 'badjson' },
+        );
     }
 }
 
@@ -113,8 +135,7 @@ export async function apiCall(url, opts = {}) {
 
         if (err && err.name === 'AbortError') {
             if (abgelaufen) {
-                const sekunden = timeoutMs / 1000;
-                throw new ApiError(`Zeitüberschreitung nach ${sekunden} s`, {
+                throw new ApiError(`Zeitüberschreitung nach ${timeoutMs / 1000} s`, {
                     status: 0,
                     detail: null,
                     kind: 'timeout',
@@ -137,25 +158,30 @@ export async function apiCall(url, opts = {}) {
     clearTimeout(timer);
     if (manuelleAbmeldung) manuelleAbmeldung();
 
-    const { json, rawText } = await leseKoerper(res);
+    const rawText = await leseRohtext(res);
 
     if (!res.ok) {
-        const serverMeldung = json && (json.error || json.detail);
-        const detail = serverMeldung ? String(serverMeldung) : snippet(rawText);
+        const detail = extractDetail(rawText);
         const meldung = detail
             ? `Serverfehler (HTTP ${res.status}) — ${detail}`
             : `Serverfehler (HTTP ${res.status})`;
         throw new ApiError(meldung, { status: res.status, detail, kind: 'http' });
     }
 
-    if (json === null) {
-        throw new ApiError(
-            `Antwort nicht auswertbar (HTTP ${res.status})${rawText ? ' — ' + snippet(rawText) : ''}`,
-            { status: res.status, detail: snippet(rawText), kind: 'badjson' },
-        );
-    }
+    // Leerer Body (z.B. 204) ist bewusst kein Fehler: null zurückgeben statt
+    // 'badjson'. 'badjson' ist reserviert für einen NICHT-leeren Body, der
+    // sich nicht als JSON parsen lässt (ein literaler JSON-"null"-Body parst
+    // hier erfolgreich zu null und zählt daher auch als Erfolg).
+    if (rawText === '') return null;
 
-    return json;
+    try {
+        return JSON.parse(rawText);
+    } catch {
+        const snip = snippet(rawText);
+        const meldung = `Unerwartete Serverantwort (HTTP ${res.status}, kein gültiges JSON)`
+            + (snip ? ` — ${snip}` : '');
+        throw new ApiError(meldung, { status: res.status, detail: snip, kind: 'badjson' });
+    }
 }
 
 /**
@@ -165,14 +191,16 @@ export async function apiCall(url, opts = {}) {
  * multipart-Content-Type samt Boundary selbst).
  */
 export async function apiForm(url, formDataOrObject, opts = {}) {
+    const headers = { ...(opts.headers || {}) };
     let body;
-    let headers = opts.headers;
 
     if (formDataOrObject instanceof FormData) {
         body = formDataOrObject;
     } else {
         body = new URLSearchParams(formDataOrObject || {});
-        headers = { 'Content-Type': 'application/x-www-form-urlencoded', ...(opts.headers || {}) };
+        if (!('Content-Type' in headers) && !('content-type' in headers)) {
+            headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+        }
     }
 
     return apiCall(url, { ...opts, body, headers });

@@ -5,7 +5,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { apiCall, ApiError } from '../js/api-call.js';
+import { apiCall, apiForm, ApiError } from '../js/api-call.js';
 
 function mockResponse(status, ok, bodyText) {
     return {
@@ -51,6 +51,7 @@ test("2. 400 + JSON {error:'Feed-URL muss…'} -> ApiError kind:'http', status 4
             assert.equal(err.kind, 'http');
             assert.equal(err.status, 400);
             assert.match(err.message, /Feed-URL muss mit https:\/\/ beginnen/);
+            assert.equal(err.detail, 'Feed-URL muss mit https:// beginnen');
             return true;
         },
     );
@@ -125,4 +126,41 @@ test("7. externes signal abgebrochen -> kind:'abort'", async () => {
             return true;
         },
     );
+});
+
+test('8. ok + leerer Body -> null (kein badjson, z.B. 204)', async () => {
+    globalThis.fetch = async () => mockResponse(200, true, '');
+    const data = await apiCall('/api.php');
+    assert.equal(data, null);
+});
+
+test('9. ok + literaler JSON-Body "null" -> null (kein badjson-Fehlalarm)', async () => {
+    globalThis.fetch = async () => mockResponse(200, true, 'null');
+    const data = await apiCall('/api.php');
+    assert.equal(data, null);
+});
+
+test('apiForm: Objekt -> URLSearchParams-Body + urlencoded Content-Type', async () => {
+    let gesehen;
+    globalThis.fetch = async (url, opts) => {
+        gesehen = opts;
+        return mockResponse(200, true, JSON.stringify({ ok: true }));
+    };
+    await apiForm('/api.php', { a: '1', b: 'zwei' });
+    assert.ok(gesehen.body instanceof URLSearchParams);
+    assert.equal(gesehen.body.get('a'), '1');
+    assert.equal(gesehen.headers['Content-Type'], 'application/x-www-form-urlencoded;charset=UTF-8');
+});
+
+test('apiForm: FormData wird unverändert durchgereicht (kein Content-Type gesetzt)', async () => {
+    let gesehen;
+    globalThis.fetch = async (url, opts) => {
+        gesehen = opts;
+        return mockResponse(200, true, JSON.stringify({ ok: true }));
+    };
+    const fd = new FormData();
+    fd.append('x', '1');
+    await apiForm('/api.php', fd);
+    assert.ok(gesehen.body instanceof FormData);
+    assert.equal(gesehen.headers['Content-Type'], undefined);
 });
