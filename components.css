@@ -702,6 +702,14 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   -webkit-mask-image: url('./icons/icon-chevron-right.svg');
           mask-image: url('./icons/icon-chevron-right.svg');
 }
+.ui-icon-upload {
+  -webkit-mask-image: url('./icons/icon-upload.svg');
+          mask-image: url('./icons/icon-upload.svg');
+}
+.ui-icon-refresh-cw {
+  -webkit-mask-image: url('./icons/icon-refresh-cw.svg');
+          mask-image: url('./icons/icon-refresh-cw.svg');
+}
 /* Theme switcher: light / auto / dark (canonical — replaces ☀ ⬤ 🌙 emojis) */
 .ui-icon-sun {
   -webkit-mask-image: url('./icons/icon-sun.svg');
