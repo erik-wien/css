@@ -736,6 +736,15 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   -webkit-mask-image: url('./icons/icon-lock.svg');
           mask-image: url('./icons/icon-lock.svg');
 }
+/* Dashboard-Kacheln (energie — replaces 📊 📈 emojis) */
+.ui-icon-bar-chart-3 {
+  -webkit-mask-image: url('./icons/icon-bar-chart-3.svg');
+          mask-image: url('./icons/icon-bar-chart-3.svg');
+}
+.ui-icon-trending-up {
+  -webkit-mask-image: url('./icons/icon-trending-up.svg');
+          mask-image: url('./icons/icon-trending-up.svg');
+}
 .ui-icon-send {
   -webkit-mask-image: url('./icons/icon-send.svg');
           mask-image: url('./icons/icon-send.svg');
