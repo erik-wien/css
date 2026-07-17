@@ -723,6 +723,15 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   -webkit-mask-image: url('./icons/icon-sun-moon.svg');
           mask-image: url('./icons/icon-sun-moon.svg');
 }
+/* Wetterbericht-Glyphen (energie dashboard — Sonne wiederverwendet .ui-icon-sun) */
+.ui-icon-cloud {
+  -webkit-mask-image: url('./icons/icon-cloud.svg');
+          mask-image: url('./icons/icon-cloud.svg');
+}
+.ui-icon-cloud-lightning {
+  -webkit-mask-image: url('./icons/icon-cloud-lightning.svg');
+          mask-image: url('./icons/icon-cloud-lightning.svg');
+}
 /* Status: Besprechung / Nicht stören (simplechat — replaces 🗓 🔕 emojis) */
 .ui-icon-calendar {
   -webkit-mask-image: url('./icons/icon-calendar.svg');
