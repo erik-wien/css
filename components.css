@@ -694,6 +694,10 @@ input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; d
   -webkit-mask-image: url('./icons/icon-map-pin.svg');
           mask-image: url('./icons/icon-map-pin.svg');
 }
+.ui-icon-move {
+  -webkit-mask-image: url('./icons/icon-move.svg');
+          mask-image: url('./icons/icon-move.svg');
+}
 .ui-icon-chevron-left {
   -webkit-mask-image: url('./icons/icon-chevron-left.svg');
           mask-image: url('./icons/icon-chevron-left.svg');
