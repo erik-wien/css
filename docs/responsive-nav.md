@@ -7,7 +7,8 @@ This library intentionally diverges from the classic "hamburger toggles a stacke
 - **Desktop (≥768 px):** horizontal `.header-nav` in the top bar with optional `.header-dropdown` panels on hover/click.
 - **Mobile (≤767 px):** `.header-nav` is hidden. The avatar button (`.user-btn`) becomes the single affordance — its chevron is replaced with a CSS-drawn ☰ glyph (`layout.css`, `@media (max-width: 767px)`). Tapping it opens the existing `.user-dropdown`, which contains:
   1. Nav items (mirrored from `appMenu`, rendered server-side into `.dropdown-nav-section`)
-  2. Account items (preferences, security, admin, theme row, help, logout)
+  2. Account items (preferences, security, status, theme row, help, logout — admin
+     lives in the menu bar's "Administration" dropdown since the 2026-07 suite policy)
 
 Nav items with nested children become drill-down triggers on mobile: the top panel is `.dd-main`, the sub-panel is `.dd-sub`, and a small JS toggle swaps `.dd-collapsed` / `.dd-open` classes.
 
