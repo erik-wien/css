@@ -1,14 +1,19 @@
-// js/api-tokens.js — API-Token-Block auf der Profilseite
-// (Erikr\Chrome\ApiTokens, chrome-Repo src/ApiTokens.php). Erik: "Lass die
-// Token dort, aber ergänze überall die Option zum Token hinzufügen/
-// widerrufen." Muster: biblio web/js/tokens.js (Vorlage), hier aber ohne
-// Full-Page-Reload — Anlegen hängt eine neue Zeile per DOM an, Widerrufen
-// entfernt sie, beides ohne Navigation.
+// js/api-tokens.js — Inhalt des "Tokens verwalten"-Dialogs auf der
+// Profilseite (Erikr\Chrome\ApiTokens, chrome-Repo src/ApiTokens.php). Erik,
+// 2026-07-25: "Die API-Token Verwaltung ist jetzt direkt im Profil. Das ist
+// unschön. Schreib nur: 'Tokens verwalten (#)' und mach das analog Kennwort
+// ändern in einem eigenen Dialog." — der Block sitzt seither im
+// app-modal-body des #apiTokensModal-Dialogs (Öffnen/Schließen via
+// admin.js' openModal()/closeModal(), siehe Profile::render()), Anlegen/
+// Widerrufen bleiben ohne Full-Page-Reload — Anlegen hängt eine neue Zeile
+// per DOM an, Widerrufen entfernt sie; der "Tokens verwalten (N)"-Auslöser-
+// Button außerhalb des Dialogs wird dabei mit aktualisiert (siehe
+// aktualisiereZaehler() unten).
 //
 // Nutzt die geteilte apiCall()-Hülle (Regel §21 — neue Callsites MÜSSEN sie
 // verwenden) und den geteilten confirmDialog() aus dialog.js (kein natives
 // confirm(), Rule §8/UI-Regeln) — Profile::render() lädt dialog.js bereits,
-// wenn der Token-Block aktiv ist.
+// wenn der Token-Dialog aktiv ist.
 //
 // Geladen als <script type="module">, wie dialog.js/api-call.js — anders
 // als das plain-<script>-Muster von avatar-cropper.js (dessen
@@ -17,9 +22,10 @@
 // Ausführungsreihenfolge-Fallstrick: type="module"-Skripte sind wie
 // `defer` verzögert, ein normales <script> danach würde also VOR diesem
 // Modul laufen. Stattdessen liest der Modul-Top-Level-Code selbst
-// `data-action`/`data-csrf-token` vom `#apiTokensBlock`-Wrapper — das ist
-// sicher, weil Modul-Skripte erst nach Abschluss des HTML-Parsens
-// ausgeführt werden, das Element also längst existiert.
+// `data-action`/`data-csrf-token` vom `#apiTokensBlock`-Element (dem
+// app-modal-body des Dialogs) — das ist sicher, weil Modul-Skripte erst nach
+// Abschluss des HTML-Parsens ausgeführt werden, das Element also längst
+// existiert.
 
 import { apiCall } from './api-call.js';
 
@@ -78,8 +84,18 @@ export function initApiTokens(root) {
     const empty = root.querySelector('#apiTokensEmpty');
     const form = root.querySelector('#apiTokenCreateForm');
     const labelInput = root.querySelector('#apiTokenLabel');
+    // Auslöser-Button lebt außerhalb des Dialogs (im Konto-Bereich der
+    // Profilseite, neben "Kennwort ändern"), global per ID gesucht statt
+    // über root — siehe Profile::render()/ApiTokens.php.
+    const toggleBtn = document.getElementById('apiTokensToggle');
 
     if (!action || !form || !list) return;
+
+    function aktualisiereZaehler() {
+        if (!toggleBtn) return;
+        const n = list.querySelectorAll('[data-token-id]').length;
+        toggleBtn.textContent = 'Tokens verwalten (' + n + ')';
+    }
 
     function zeigeFehler(msg) {
         if (!fehler) return;
@@ -109,6 +125,7 @@ export function initApiTokens(root) {
                 list.prepend(baueZeile(data.item));
                 list.hidden = false;
                 if (empty) empty.hidden = true;
+                aktualisiereZaehler();
             }
             if (labelInput) labelInput.value = '';
             if (revealField) revealField.value = (data && data.token) || '';
@@ -154,6 +171,7 @@ export function initApiTokens(root) {
                 list.hidden = true;
                 if (empty) empty.hidden = false;
             }
+            aktualisiereZaehler();
         } catch (e) {
             zeigeFehler(e.message || 'Widerrufen fehlgeschlagen.');
             btn.disabled = false;

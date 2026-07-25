@@ -119,7 +119,11 @@
       });
     });
     document.querySelectorAll(MODAL_SEL).forEach(function (m) {
-      m.addEventListener('click', function (e) {
+      // pointerdown, not click (UI Rule §8): a click that starts inside the
+      // dialog (e.g. selecting text in a readonly reveal field, TASK
+      // chrome-token-dialog 2026-07-25) and ends past its edge would
+      // otherwise target the backdrop and wrongly close it.
+      m.addEventListener('pointerdown', function (e) {
         if (e.target === m) closeModal(m.id);
       });
       m.addEventListener('keydown', function (e) {
