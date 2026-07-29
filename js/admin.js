@@ -11,13 +11,21 @@
  *     panels with `id="panel-<name>" class="tab-panel"`.
  *   - Wire its own click handlers for [data-modal-open], [data-modal-close],
  *     and form submits (using adminPost + showAlert).
+ *   - Bei einer Antwort mit `warning` KEINE Erfolgsmeldung zeigen: die Aktion
+ *     ist gelaufen, aber etwas ging schief (z. B. Konto angelegt, Einladungs-
+ *     mail nicht zugestellt — auth TASK-7). adminPost() zeigt die Warnung
+ *     selbst an und rettet sie ueber den Reload; die App muss nur schweigen.
  */
 (function () {
   'use strict';
 
   /* ── Alerts ──────────────────────────────────────────────────────────────── */
 
-  function showAlert(msg, type, containerId) {
+  /* persistent=true laesst die Meldung stehen. Gedacht fuer Befunde, die der
+     Admin wirklich lesen muss (etwa: die Einladungsmail ging nicht raus) —
+     eine 5-Sekunden-Blase uebersieht man. Zusaetzlicher Parameter, damit alle
+     bestehenden Aufrufe unveraendert weiterlaufen. */
+  function showAlert(msg, type, containerId, persistent) {
     const box = document.getElementById(containerId || 'adminAlerts');
     if (!box) return;
     const div = document.createElement('div');
@@ -27,7 +35,7 @@
     div.setAttribute('role', 'alert');
     div.textContent = msg;
     box.appendChild(div);
-    setTimeout(function () { div.remove(); }, 5000);
+    if (!persistent) setTimeout(function () { div.remove(); }, 5000);
   }
 
   function clearAlerts(containerId) {
@@ -48,11 +56,49 @@
     }
     const url = 'api.php?action=' + encodeURIComponent(action);
     const res = await fetch(url, { method: 'POST', body: fd });
+    let data;
     try {
-      return await res.json();
+      data = await res.json();
     } catch (_) {
       return { ok: false, error: 'Ungültige Serverantwort.' };
     }
+    /* Eine Aktion kann gelingen und trotzdem etwas zu melden haben — etwa:
+       Benutzer angelegt, aber die Einladungsmail ging nicht raus (auth
+       TASK-7). Zentral hier statt in jeder App, weil sonst jede der sieben
+       Userverwaltungen es einzeln beruecksichtigen muesste.
+       Ueber den Reload retten: alle Aufrufer laden nach einem Erfolg 700 ms
+       spaeter die Seite neu — eine sofort gezeigte Meldung waere weg, bevor
+       man sie gelesen hat. */
+    if (data && data.warning) stashWarning(data.warning);
+    return data;
+  }
+
+  var WARN_KEY = 'adminWarning';
+
+  function stashWarning(msg) {
+    try { sessionStorage.setItem(WARN_KEY, msg); } catch (_) { /* Privatmodus */ }
+    showWarning(msg);
+  }
+
+  /* Beim Laden: eine vor dem Reload hinterlegte Meldung nachholen. */
+  function replayWarning() {
+    var msg = null;
+    try {
+      msg = sessionStorage.getItem(WARN_KEY);
+      if (msg) sessionStorage.removeItem(WARN_KEY);
+    } catch (_) { /* Privatmodus */ }
+    if (msg) showWarning(msg);
+  }
+
+  function showWarning(msg) {
+    /* Doppelt anzeigen vermeiden: derselbe Text steht evtl. schon da. */
+    var box = document.getElementById('adminAlerts');
+    if (box) {
+      for (var i = 0; i < box.children.length; i++) {
+        if (box.children[i].textContent === msg) return;
+      }
+    }
+    showAlert(msg, 'warning', null, true);
   }
 
   /* ── Modals ──────────────────────────────────────────────────────────────── */
@@ -232,11 +278,16 @@
         confirmBtn.disabled = false;
         if (r.ok) {
           closeModal('resetPasswordModal');
-          var msg = 'Passwort-Reset versendet.';
-          if (r.unblocked_ips && r.unblocked_ips.length) {
-            msg += ' IPs entsperrt: ' + r.unblocked_ips.join(', ');
+          var ips = (r.unblocked_ips && r.unblocked_ips.length)
+            ? ' IPs entsperrt: ' + r.unblocked_ips.join(', ') : '';
+          /* Bei r.warning ist der Reset gelaufen, aber die Mail nicht raus —
+             die Warnung hat adminPost() bereits gezeigt. Dann NICHT zusaetzlich
+             'versendet' melden, das waere die Unwahrheit (auth TASK-7). */
+          if (r.warning) {
+            if (ips) showAlert('Reset ausgefuehrt.' + ips, 'info');
+          } else {
+            showAlert('Passwort-Reset versendet.' + ips, 'success');
           }
-          showAlert(msg, 'success');
         } else {
           showAlert(r.error || 'Fehler beim Reset.', 'danger', 'resetPasswordAlerts');
         }
@@ -487,6 +538,7 @@
     wireModals();
     wireTabs();
     wireResetPreview();
+    replayWarning();
   }
 
   if (document.readyState === 'loading') {
