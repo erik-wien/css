@@ -3,9 +3,10 @@ id: TASK-12
 title: >-
   Geteilte Assets werden ohne Cache-Buster ausgeliefert — Aenderungen an
   css_library greifen bis zu 4 h nicht
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-07-29 10:19'
+updated_date: '2026-07-30 04:57'
 labels: []
 dependencies: []
 priority: medium
@@ -14,34 +15,63 @@ priority: medium
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Nebenbefund aus auth TASK-7 (2026-07-29).
+Nebenbefund aus auth TASK-7 (2026-07-29), umgesetzt 2026-07-30.
 
-BEFUND: Die Apps binden Dateien aus dem geteilten css/shared/ ueberwiegend OHNE ?v=-Parameter ein. Gemessen (Anzahl eindeutiger Referenzen auf css/shared/*.js|css in web/*.php):
+KORREKTUR DES URSPRUENGLICHEN BEFUNDS: Die erste Fassung dieser Beschreibung
+behauptete, fuenf Apps haetten ueberhaupt keinen Cache-Buster. Das war falsch
+und beruhte auf einem zu grobem grep. Tatsaechlich hat JEDE App eine
+mtime-basierte Ableitung — sc_asset_v(), $cssV()/$jsV(), lf_asset_v(),
+en_asset_v(), zf_asset_v(), biblios APP_BUILD. Der Mechanismus fehlte also
+nicht; er wurde nur an bestimmten Stellen nicht benutzt.
 
-  App             ohne ?v=   mit ?v=
-  suche                  0         1
-  biblio                 2         5
-  Energie                6         1
-  simplechat             7         0
-  wlmonitor             10         2
-  last.fm               11         0
-  zeiterfassung         11         1
+TATSAECHLICHE BEFUNDE (alle gemessen, nicht geschaetzt):
 
-Ausgeliefert wird mit 'cache-control: max-age=14400' (4 h), nachgemessen an https://biblio.jardyx.com/css/shared/js/admin.js und https://wlmonitor.eriks.cloud/css/shared/js/admin.js. Danach revalidiert der Browser ueber ETag/Last-Modified und holt die neue Datei — es heilt sich also selbst, aber erst nach bis zu vier Stunden.
+1. 29 Asset-Referenzen banden JS/CSS OHNE jeden Buster ein. Darunter in ALLEN
+   sechs Apps, die sie laden, die geteilte css/shared/js/admin.js — genau die
+   Datei, die auth TASK-7 geaendert hat. Ebenso field-enhance.js (5 Apps),
+   dialog.js (zeiterfassung), und in simplechat 38 Referenzen auf den
+   Auth-Seiten (login, setpassword, forgotPassword, executeReset, totp_verify,
+   impressum), die alle ueber basePath() ohne Buster liefen.
 
-WARUM DAS ZAEHLT: Eine Aenderung an einer geteilten Datei wirkt bis zu 4 h nicht, obwohl der serverseitige Teil des Deploys sofort greift. Das erzeugt Mischzustaende aus neuem PHP und alter JS-Datei. Konkret bei auth TASK-7 aufgetreten: die App unterdrueckt seit dem Deploy die (falsche) Erfolgsmeldung, waehrend eine gecachte alte admin.js die Warnung noch nicht anzeigen kann — in diesem Fenster saehe ein Admin bei einem Mailfehler GAR KEINE Meldung. Harmloser als die vorherige Falschmeldung, aber unnoetig.
+2. suches APP_BUILD war die handgepflegte Zahl 6. Da JEDE Asset-URL in suche an
+   ?v=APP_BUILD haengt, blieb dort nach einer css_library-Aenderung alles auf dem
+   alten Stand, bis der Browser von selbst revalidierte.
 
-Der Mischzustand ist die eigentliche Gefahr, nicht die Verzoegerung: bei jeder kuenftigen Aenderung, die Server- und Client-Seite gemeinsam betrifft, ist fuer 4 h ein inkonsistenter Stand aktiv.
+3. biblios Auto-Ableitung hatte einen Fehler: ohne FOLLOW_SYMLINKS betritt
+   RecursiveDirectoryIterator das symlinkte web/css/shared nicht. Nachgemessen:
+   5 von 19 Dateien gesehen, juengste mtime einen Tag zu alt — die
+   admin.js-Aenderung von TASK-7 war fuer die Kennung unsichtbar. Nur in der
+   Entwicklung wirksam (auf dem Server legt rsync --copy-links echte Dateien an),
+   also genau dort, wo man es fuer einen Browser-Cache haelt.
 
-MOEGLICHE WEGE (nicht vorgegeben):
-- Einheitlich ?v=APP_BUILD an alle shared-Referenzen. Problem: APP_BUILD ist in suche/simplechat/wlmonitor/last.fm/Energie eine handgepflegte Zahl — sie wird beim naechsten Mal wieder vergessen.
-- Das biblio-Muster uebernehmen (APP_BUILD = juengste mtime aller ausgelieferten JS/CSS, base36). Es erfasst nach dem Deploy auch das geteilte Verzeichnis, weil rsync --copy-links dort echte Dateien anlegt und die mtime erhaelt — also genau der Fall, um den es hier geht. Lokal greift es fuer shared/ nicht, weil RecursiveDirectoryIterator symlinked Verzeichnisse per Default nicht betritt.
-- Alternativ serverseitig: kuerzeres max-age fuer css/shared/ oder must-revalidate.
+UMSETZUNG:
+- Erikr\\Chrome\\AssetVersion (neu, mit Test): fromMtimes() fuer ein
+  abgeleitetes APP_BUILD, forFile() fuer einzelne Dateien. Ersetzt biblios
+  Inline-Fassung und wird von suche mitbenutzt, statt sie zu kopieren.
+- biblio + suche: APP_BUILD daraus abgeleitet.
+- simplechat: assetPath() neben basePath(), 38 Referenzen umgestellt.
+- wlmonitor: AssetVersion::forFile() auf den Standalone-Seiten (login, admin),
+  wo die Closure aus inc/layout.php nicht in Reichweite ist.
+- last.fm / Energie / zeiterfassung / suche / biblio: die fehlenden Referenzen
+  auf den jeweils vorhandenen eigenen Helfer bzw. das eigene Idiom umgestellt —
+  kein achter Mechanismus.
+
+NACHWEIS: Login-Seite jeder App auf einem eigenen PHP-Server gerendert
+(*.test zeigt lokal auf EINEN Vhost und ist als Nachweis untauglich — der erste
+Versuch lieferte deshalb fuer alle sieben dasselbe Ergebnis). Danach 0
+Referenzen ohne Buster in allen sieben Apps, und der Buster fuer
+css/shared/js/admin.js loest in allen sieben auf die mtime der
+TASK-7-Aenderung auf.
+
+NICHT TEIL DAVON (bewusst): die sieben *_asset_v()-Helfer zu einem
+zusammenzufassen. Sie funktionieren, und sie alle auf AssetVersion umzuziehen
+haette ~60 weitere Referenzen angefasst, ohne etwas zu reparieren. Waere ein
+eigener Aufraeum-Task.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Eine Aenderung an einer Datei in css_library wirkt nach dem Deploy sofort, ohne dass ein Nutzer den Browser-Cache leeren muss
-- [ ] #2 Der Mechanismus funktioniert ohne manuelles Hochzaehlen — eine vergessene Nummer darf nicht wieder zu altem Code beim Nutzer fuehren
-- [ ] #3 In allen sieben Apps einheitlich; die gemessenen Zahlen oben sind auf 0 ohne ?v= (oder aequivalent geloest)
+- [x] #1 Eine Aenderung an einer Datei in css_library wirkt nach dem Deploy sofort, ohne dass ein Nutzer den Browser-Cache leeren muss
+- [x] #2 Der Mechanismus funktioniert ohne manuelles Hochzaehlen — eine vergessene Nummer darf nicht wieder zu altem Code beim Nutzer fuehren
+- [x] #3 In allen sieben Apps einheitlich; die gemessenen Zahlen oben sind auf 0 ohne ?v= (oder aequivalent geloest)
 <!-- AC:END -->
